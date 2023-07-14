@@ -1,28 +1,18 @@
 // import { fchown } from "fs";
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
-import React from "react";
+import React, { useState } from "react";
 import "./App.scss";
 import tracks from "./tracks";
+import { forEachChild } from "typescript";
 
 export default App;
 
-// static handels ==================
+// plugs ==================
 const MENU_ITEMS = [
   { link: "#", text: "Главное" },
   { link: "#", text: "Мои треки" },
   { link: "#", text: "Войти" },
 ];
-
-const FILTERS = [
-  { filter: "author", text: "исполнителю" },
-  { filter: "year", text: "году выпуска" },
-  { filter: "genre", text: "жанру" },
-];
-
-// plugs ===========================
-const TRACKS = tracks;
-
-const CURRENT_TRACK = TRACKS[0];
 
 const SELECTIONS = [
   {
@@ -58,40 +48,97 @@ function formatTime(secconds: number) {
 // ============ end ================
 
 function App() {
+  const [userPref, setUserPref] = useState<UserPrefs>({
+    filterBarElements: ["author", "genre", "release_date"]
+  });
+  const [tracksPool, setTracksPool] = useState(tracks); // getting data every time we choose playlist|log-in
+  const [sortedTracks, setSortedTracks] = useState(tracksPool); // being updated every time we modify filters
+  const [currnetTracksQueue, setCurrentTracksQueue] = useState(tracksPool); // getting tracks from sortedTracks after track was clicked
+  const [trackInPlay, setTrackInPlay] = useState(tracksPool[0]); // first currnetTracksQueue's track at the beginning, than track in play
+  const [checkedFilters, setCheckedFilters] = useState();
+  const [sortOption, setSortOption] = useState();
+
+  const artistsPool = [...(new Set(tracksPool.map((track) => {return track.author})))].sort(); // getting initial filter options
+  const genresPool = [...(new Set(tracksPool.map((track) => {return track.genre})))].sort(); // getting initial filter options
+
+
+  // написать функцию которая будет сортировать треклист: trackList + checkedFilters => sortedTracks
+
+  // написать функцию onFilterChange которая будет обновлять checkedFilters и сортировать tracklist
+
+  const handleFilterChange = (filterKey: string, filterOption: string) => {
+    console.log(filterKey + ": " + filterOption);
+  }
+
+
+  function getFilterOptionsByCategory (tracksArray: track[], category: filterCtgs) {
+    return (
+      [...(new Set(tracksArray.map((track) => {return track[category]})))].sort() as filterCtgs[]
+    )
+  }
+
+  function gatherFilterProps() {
+    // надо как-то избавиться от "any"
+    const filterOptions: any = {};
+    userPref.filterBarElements.forEach((element) => {
+      if (["name", "author", "genre", "album"].includes(element)) {
+        filterOptions[element] = getFilterOptionsByCategory(sortedTracks, element as filterCtgs);
+      }
+    })
+
+    const result: filterSortProps = {
+      filterBarOrder: userPref.filterBarElements,
+      filterOptions: filterOptions,
+      checkedFilters: checkedFilters,
+      checkedSorting: sortOption,
+      onFilterChange: handleFilterChange
+    };
+    return result;
+  }
+
   return (
     <div className="wrapper">
       <div className="container">
-        <Main />
-        <Bar />
+        <Main
+          sortedTracks={sortedTracks}
+          filterProps={gatherFilterProps()}
+        />
+        <Bar currentTrack={trackInPlay}/>
         <footer className="footer"></footer>
       </div>
     </div>
   );
 }
 
-function Main() {
+function Main(props: mainProps) {
   return (
     <main className="main">
-      <Navigation className="main__nav" />
-      <CenterBlock className="main__centerblock" />
+      <Navigation navItems={MENU_ITEMS} isOpened={false}/>
+      <CenterBlock {...props} />
       <Sidebar className="main__sidebar" />
     </main>
   );
 }
 
-function Navigation(props: stdProps) {
+function Navigation(props: navProps) {
+  const [isMenuVisible, setMenuVisibility] = useState(props.isOpened);
+  
+  const toggleMenuVisibility = () => {
+    setMenuVisibility(!isMenuVisible);
+  }
+
   return (
-    <nav className={`${props.className && props.className} nav`}>
-      <Logo className="nav__logo" />
-      <Burger className="nav__burger" />
-      <Menu className="nav__menu" listOfItems={MENU_ITEMS} />
+    <nav className="main__nav nav">
+      <Logo />
+      <Burger onClick={toggleMenuVisibility}/>
+      {isMenuVisible && <Menu listOfItems={props.navItems} />}
     </nav>
   );
 }
 
-function Logo(props: stdProps) {
+function Logo() {
   return (
-    <div className={`${props.className && props.className} logo`}>
+    <div className="nav__logo logo">
       <img
         src="./img/logo.png"
         aria-label="skypro logo"
@@ -101,9 +148,9 @@ function Logo(props: stdProps) {
   );
 }
 
-function Burger(props: stdProps) {
+function Burger(props: burgerProps) {
   return (
-    <div className={`${props.className && props.className} burger`}>
+    <div className="nav__burger burger" onClick={props.onClick}>
       <span className="burger__line"></span>
       <span className="burger__line"></span>
       <span className="burger__line"></span>
@@ -113,7 +160,7 @@ function Burger(props: stdProps) {
 
 function Menu(props: menuProps) {
   return (
-    <div className={`${props.className && props.className} menu`}>
+    <div className="nav__menu menu">
       <ul className="menu__list">
         {props.listOfItems.map((item) => (
           <MenuItem link={item.link} text={item.text} key={item.text} />
@@ -133,20 +180,20 @@ function MenuItem(props: linkTextProps) {
   );
 }
 
-function CenterBlock(props: stdProps) {
+function CenterBlock(props: mainProps) {
   return (
-    <div className={`${props.className && props.className} centerblock`}>
-      <SearchBar className="centerblock__search" />
+    <div className="main__centerblock">
+      <SearchBar />
       <h2 className="centerblock__h2">Треки</h2>
-      <Filter className="centerblock__filter" />
-      <Content className="centerblock__content" />
+      <FilterBar {...props.filterProps} />
+      <Content sortedTracks={props.sortedTracks} />
     </div>
   );
 }
 
-function SearchBar(props: stdProps) {
+function SearchBar() {
   return (
-    <div className={`${props.className && props.className} search`}>
+    <div className="centerblock__search">
       <SvgImg
         className="search__svg"
         href="img/icon/sprite.svg#icon-search"
@@ -162,37 +209,149 @@ function SearchBar(props: stdProps) {
   );
 }
 
-function Filter(props: stdProps) {
+function FilterBar(props: filterSortProps) {
+  // Комменты чтобы потом удалить. Куча сомнений и допущений. Решил записать их;
+  // Пока нет понимания как по итогу будет работать всё приложение целиком (какие будут стейты в самом App, до куда поднимать локальные стейты, где какие обработчики будут);
+  // Предполагаю что в FilterBar будет приходить пропс типа filterProps для того чтобы потом всё "само" проростало внутрь компонента FilterBar; Вобщем "что отрисовывать" будем получать извне и это что-то будет храниться либо в переменных либо в стейтах App. Подобное делали в предыдущем проекте. Работает ли этот подход (передача в пропс объекта-шаблона) в React или есть более изящные решения? Мне такой подход нравится => для того чтобы отрисовать нужные компоненты необходимо просто отредактировать передаваемый шаблон;
+  // FilterBar помимо отрисовки фильтров должен иметь возможность передавать выбраные фильтры наружу(обрабатывать внешние стейты внутри) для их применения и изменения содержимого плей-листа; Вобщем FilterBar зависит от внешних пропсов и в то-же время должен иметь возможность влиять на внешние стейты;
+
+  const allElementsMissings = {
+    name: {
+      ruText: "треку"
+    },
+    author: {
+      ruText: "исполнителю"
+    },
+    genre: {
+      ruText: "жанру"
+    },
+    album: {
+      ruText: "альбому"
+    },
+    id: {
+      ruText: "номеру",
+      options: {
+        descending: "По убыванию",
+        increasing: "По возрастанию"
+      }
+    },
+    release_date: {
+      ruText: "дате выхода",
+      options: {
+        descending: "Сначала новые",
+        increasing: "Сначала старые"
+      }
+    },
+    duration_in_seconds: {
+      ruText: "продолжительности",
+      options: {
+        descending: "Сначала долгие",
+        increasing: "Сначала короткие"
+      }
+    },
+  }
+
+  const [expandedFilter, setExpandedFilter] = useState<string|undefined>();
+
+  // const [checkedFilters, setCheckedFilters] = useState(() => {
+  //   const result: checkedFilters = {};
+  //   filterCategoriesNames.forEach((name) => {
+  //     result[name] = {
+  //       checkedOptions: []
+  //     }
+  //   })
+  //   return result;
+  // });
+  
+  const handleButtonClick = (filterName: string) => {
+    expandedFilter === filterName ? setExpandedFilter(undefined) : setExpandedFilter(filterName);
+  }
+
+  const content = props.filterBarOrder.map((name) => {
+    if (["name", "author", "genre", "album"].includes(name)) {
+      return (
+        <FilterButton
+          filterName={name}
+          ruText={allElementsMissings[name].ruText}
+          isOpened={expandedFilter === name}
+          options={props.filterOptions[name as keyof typeof props.filterOptions]}
+          checkedOptions={props.checkedFilters && props.checkedFilters[name as keyof typeof props.checkedFilters]}
+          onBtnClick={() => {handleButtonClick(name)}}
+          onDropDownClick={props.onFilterChange}
+          key={name} />
+      );
+    }
+
+    return (
+      <FilterButton
+        filterName={name}
+        ruText={allElementsMissings[name].ruText}
+        isOpened={expandedFilter === name}
+        options={Object.values(allElementsMissings[name]["options" as keyof typeof allElementsMissings.name])}
+        checkedOptions={props.checkedFilters && props.checkedFilters[name as keyof typeof props.checkedFilters]}
+        onBtnClick={() => {handleButtonClick(name)}}
+        onDropDownClick={props.onFilterChange}
+        key={name} />
+    );
+  });
+
   return (
-    <div className={`${props.className && props.className} filter`}>
+    <div className="centerblock__filter filter">
       <div className="filter__title">Искать по:</div>
-      {FILTERS.map((item) => {
-        return <FilterButton {...item} key={item.filter} />;
+      {content}
+    </div>
+  );
+}
+
+function FilterButton(props: filterButtonProps) {
+  return (
+    <div className={`filter__button-wrapper`}>
+      <div className={`filter__button${props.isOpened ? " filter__button_active" : ""} _btn-text`} onClick={props.onBtnClick}>
+        {props.ruText}
+      </div>
+      {props.isOpened &&
+      <FilterButtonDropdown
+        filterName={props.filterName}
+        options={props.options}
+        checkedOptions={props.checkedOptions}
+        onDropDownClick={props.onDropDownClick} />}
+    </div>
+  );
+}
+
+function FilterButtonDropdown(props: filterBtnDropdownProps) {
+  return (
+    <ul className="filter-button__dropdown">
+      {props.options.map((option) => {
+        let className = "dropdown__item";
+        props.checkedOptions && props.checkedOptions.includes(option) && (className = "dropdown__item_checked")
+        return (
+          <li
+            className={className}
+            onClick={() => {
+              props.onDropDownClick(props.filterName, option);
+            }}
+            key={option}>
+              {option}
+          </li>
+        )
       })}
+    </ul>
+  );
+}
+
+function Content(props: playListProps) {
+  return (
+    <div className="centerblock__content" >
+      <PlaylistTitle />
+      <Playlist sortedTracks={props.sortedTracks} />
     </div>
   );
 }
 
-function FilterButton(props: filterTextProps) {
+function PlaylistTitle() {
   return (
-    <div className={`filter__button button-${props.filter} _btn-text`}>
-      {props.text}
-    </div>
-  );
-}
-
-function Content(props: stdProps) {
-  return (
-    <div className={`${props.className && props.className} content`}>
-      <PlaylistTitle className="content__title" />
-      <Playlist className="content__playlist" />
-    </div>
-  );
-}
-
-function PlaylistTitle(props: stdProps) {
-  return (
-    <div className={`${props.className && props.className} playlist-title`}>
+    <div className="content__title playlist-title">
       <div className="playlist-title__col col01">Трек</div>
       <div className="playlist-title__col col02">ИСПОЛНИТЕЛЬ</div>
       <div className="playlist-title__col col03">АЛЬБОМ</div>
@@ -205,10 +364,10 @@ function PlaylistTitle(props: stdProps) {
   );
 }
 
-function Playlist(props: stdProps) {
+function Playlist(props: playListProps) {
   return (
-    <div className={`${props.className && props.className} playlist`}>
-      {TRACKS.map((track) => {
+    <div className="content__playlist playlist">
+      {props.sortedTracks.map((track) => {
         return <PlaylistItem {...track} key={track.id} />;
       })}
     </div>
@@ -218,14 +377,14 @@ function Playlist(props: stdProps) {
 function PlaylistItem(props: track) {
   return (
     <div className="playlist__item">
-      <Track className="playlist__track" trackData={props} />
+      <Track trackData={props} />
     </div>
   );
 }
 
 function Track(props: trackProps) {
   return (
-    <div className={`${props.className && props.className} track`}>
+    <div className="playlist__track track">
       <div className="track__title">
         <div className="track__title-image">
           <svg className="track__title-svg" aria-label="music">
@@ -307,31 +466,31 @@ function SidebarItem(props: selection) {
   );
 }
 
-function Bar() {
+function Bar(props: barProps) {
   return (
     <div className="bar">
       <div className="bar__content">
         <div className="bar__player-progress"></div>
-        <PlayerBlock />
+        <PlayerBlock {...props} />
       </div>
     </div>
   );
 }
 
-function PlayerBlock() {
+function PlayerBlock(props: barProps) {
   return (
     <div className="bar__player-block">
-      <Player className="bar__player" />
+      <Player {...props.currentTrack} />
       <Volume />
     </div>
   );
 }
 
-function Player(props: stdProps) {
+function Player(props: track) {
   return (
-    <div className={`${props.className && props.className} player`}>
+    <div className="bar__player player">
       <PlayerControls />
-      <TrackPlay className="player__track-play" currentTrack={CURRENT_TRACK} />
+      <TrackPlay currentTrack={props} />
     </div>
   );
 }
@@ -391,7 +550,7 @@ function SvgImg(props: svgProps) {
 
 function TrackPlay(props: trackPlayProps) {
   return (
-    <div className={`${props.className && props.className} track-play`}>
+    <div className="player__track-play track-play">
       <div className="track-play__contain">
         <div className="track-play__image">
           <SvgImg

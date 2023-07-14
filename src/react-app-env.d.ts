@@ -1,4 +1,10 @@
 /// <reference types="react-scripts" />
+type filterCtgs = "name"| "author" | "genre" | "album";
+type sortCtgs = "id" | "release_date" | "duration_in_seconds";
+
+interface UserPrefs {
+  filterBarElements: (filterCtgs|sortCtgs)[];
+}
 
 interface stdProps {
   className?: string;
@@ -9,16 +15,85 @@ interface linkTextProps {
   text: string;
 }
 
-interface filterTextProps {
-  filter: string;
-  text: string;
+interface navProps {
+  navItems: linkTextProps[];
+  isOpened: boolean;
 }
 
-interface menuProps extends stdProps {
+interface menuProps {
   listOfItems: linkTextProps[];
 }
 
-interface trackProps extends stdProps {
+interface burgerProps {
+  onClick: () => void;
+}
+
+interface mainProps {
+  sortedTracks: track[];
+  filterProps: filterProps;
+}
+
+interface filterSortProps {
+  filterBarOrder: (filterCtgs|sortCtgs)[];
+  filterOptions: {
+    [key: filterCtgs]: string[];
+  };
+  checkedFilters?: {
+    [key: filterCtgs]: string[]
+  };
+  checkedSorting?: {
+    [key: sortCtgs]: "descending" | "increasing"
+  };
+  onFilterChange: (filterName: string, filterOption: string) => void;
+}
+
+// interface filterOptions {
+//   [key: filterCtgs]: {
+//     ruText: string;
+//     checkedOptions?: string[];
+//     availableOptions: string[]|[];
+//   };
+// }
+
+// interface sortingOptions {
+//   [key: sortCtgs]: {
+//     ruText: string;
+//     checkedOptions?: string;
+//     options: {
+//       descending: string,
+//       increasing: string
+//     };
+//   };
+// }
+
+// interface checkedFilters {
+//   [key: string]: {
+//     checkedOptions?: string[] | [];
+//   };
+// }
+
+interface filterButtonProps {
+  filterName: string;
+  ruText: string;
+  isOpened: boolean;
+  options: string[];
+  checkedOptions?: string[];
+  onBtnClick: () => void;
+  onDropDownClick: (filterName: string, filterOption: string) => void;
+}
+
+interface filterBtnDropdownProps {
+  filterName: string;
+  options: string[];
+  checkedOptions?: string[];
+  onDropDownClick: (filterName: string, filterOption: string) => void;
+}
+
+interface playListProps {
+  sortedTracks: track[]
+}
+
+interface trackProps {
   trackData: track;
 }
 
@@ -27,7 +102,7 @@ interface svgProps extends stdProps {
   href: string;
 }
 
-interface trackPlayProps extends stdProps {
+interface trackPlayProps {
   currentTrack: track;
 }
 
@@ -46,6 +121,10 @@ interface track {
   logo: null | string;
   track_file: string;
   stared_user: user[];
+}
+
+interface barProps {
+  currentTrack: track;
 }
 
 interface user {
