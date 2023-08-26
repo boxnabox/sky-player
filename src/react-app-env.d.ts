@@ -1,4 +1,4 @@
-/// <reference types="react-scripts" />
+// <reference types="react-scripts" />
 type filterCtgs = "name"| "author" | "genre" | "album";
 type sortCtgs = "id" | "release_date" | "duration_in_seconds";
 
@@ -8,6 +8,10 @@ interface UserPrefs {
 
 interface stdProps {
   className?: string;
+}
+
+interface CheckedFilters {
+  [key: string]: string[]|[]
 }
 
 interface linkTextProps {
@@ -33,6 +37,10 @@ interface mainProps {
   filterProps: filterProps;
 }
 
+interface FilterOptions {
+  [key: filterCtgs]: string[];
+}
+
 interface filterSortProps {
   filterBarOrder: (filterCtgs|sortCtgs)[];
   filterOptions: {
@@ -45,32 +53,8 @@ interface filterSortProps {
     [key: sortCtgs]: "descending" | "increasing"
   };
   onFilterChange: (filterName: string, filterOption: string) => void;
+  onSortChange: (filterName: string, filterOption: string) => void;
 }
-
-// interface filterOptions {
-//   [key: filterCtgs]: {
-//     ruText: string;
-//     checkedOptions?: string[];
-//     availableOptions: string[]|[];
-//   };
-// }
-
-// interface sortingOptions {
-//   [key: sortCtgs]: {
-//     ruText: string;
-//     checkedOptions?: string;
-//     options: {
-//       descending: string,
-//       increasing: string
-//     };
-//   };
-// }
-
-// interface checkedFilters {
-//   [key: string]: {
-//     checkedOptions?: string[] | [];
-//   };
-// }
 
 interface filterButtonProps {
   filterName: string;

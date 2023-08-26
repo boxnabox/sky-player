@@ -1,6 +1,6 @@
 // import { fchown } from "fs";
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.scss";
 import tracks from "./tracks";
 import { forEachChild } from "typescript";
@@ -55,21 +55,52 @@ function App() {
   const [sortedTracks, setSortedTracks] = useState(tracksPool); // being updated every time we modify filters
   const [currnetTracksQueue, setCurrentTracksQueue] = useState(tracksPool); // getting tracks from sortedTracks after track was clicked
   const [trackInPlay, setTrackInPlay] = useState(tracksPool[0]); // first currnetTracksQueue's track at the beginning, than track in play
-  const [checkedFilters, setCheckedFilters] = useState();
-  const [sortOption, setSortOption] = useState();
+  const [checkedFilters, setCheckedFilters] = useState(() => {
+    const result: CheckedFilters = {};
+    userPref.filterBarElements.forEach((element) => {
+      if (["name", "author", "genre", "album"].includes(element)) {result[element] = []};
+    })
+    return result;
+  });
+  const [sortOption, setSortOption] = useState(() => {
+        const result: CheckedFilters = {};
+    userPref.filterBarElements.forEach((element) => {
+      if (["id", "release_date", "duration_in_seconds"].includes(element)) {result[element] = []};
+    })
+    return result;
+  });
 
   const artistsPool = [...(new Set(tracksPool.map((track) => {return track.author})))].sort(); // getting initial filter options
   const genresPool = [...(new Set(tracksPool.map((track) => {return track.genre})))].sort(); // getting initial filter options
 
 
   // написать функцию которая будет сортировать треклист: trackList + checkedFilters => sortedTracks
-
   // написать функцию onFilterChange которая будет обновлять checkedFilters и сортировать tracklist
 
   const handleFilterChange = (filterKey: string, filterOption: string) => {
-    console.log(filterKey + ": " + filterOption);
+    console.log("Filter: " + filterKey + ": " + filterOption);
+
+    if (checkedFilters[filterKey].includes(filterOption)) {
+
+    }
   }
 
+  const handleSortChange = (filterKey: string, filterOption: string) => {
+    console.log("Sort: " + filterKey + ": " + filterOption);
+  
+    if (sortOption[filterKey][0] === filterOption) {
+      setSortOption(() => {
+        const result: CheckedFilters = {[filterKey]: []}
+        return result;
+      })
+      return;
+    }
+
+    setSortOption(() => {
+      const result: CheckedFilters = {[filterKey]: [filterOption]}
+      return result;
+    })
+  }
 
   function getFilterOptionsByCategory (tracksArray: track[], category: filterCtgs) {
     return (
@@ -91,7 +122,8 @@ function App() {
       filterOptions: filterOptions,
       checkedFilters: checkedFilters,
       checkedSorting: sortOption,
-      onFilterChange: handleFilterChange
+      onFilterChange: handleFilterChange,
+      onSortChange: handleSortChange,
     };
     return result;
   }
@@ -252,16 +284,6 @@ function FilterBar(props: filterSortProps) {
   }
 
   const [expandedFilter, setExpandedFilter] = useState<string|undefined>();
-
-  // const [checkedFilters, setCheckedFilters] = useState(() => {
-  //   const result: checkedFilters = {};
-  //   filterCategoriesNames.forEach((name) => {
-  //     result[name] = {
-  //       checkedOptions: []
-  //     }
-  //   })
-  //   return result;
-  // });
   
   const handleButtonClick = (filterName: string) => {
     expandedFilter === filterName ? setExpandedFilter(undefined) : setExpandedFilter(filterName);
@@ -290,7 +312,7 @@ function FilterBar(props: filterSortProps) {
         options={Object.values(allElementsMissings[name]["options" as keyof typeof allElementsMissings.name])}
         checkedOptions={props.checkedFilters && props.checkedFilters[name as keyof typeof props.checkedFilters]}
         onBtnClick={() => {handleButtonClick(name)}}
-        onDropDownClick={props.onFilterChange}
+        onDropDownClick={props.onSortChange}
         key={name} />
     );
   });
