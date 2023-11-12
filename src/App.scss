@@ -303,6 +303,17 @@ body {
   position: absolute;
   overflow: hidden;
   margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .dropdown__item {
@@ -312,17 +323,18 @@ body {
   &_checked {
     font-size: 20px;
     line-height: 24px;
-    color: #B672FF;
+    color: #b672ff;
+    text-decoration-line: underline;
   }
 }
 
 .dropdown__item:hover {
-  color: #D9B6FF;
+  color: #d9b6ff;
   cursor: pointer;
 }
 
 .dropdown__item:active {
-  color: #B672FF;
+  color: #b672ff;
 }
 
 .content {

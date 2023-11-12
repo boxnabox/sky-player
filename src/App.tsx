@@ -1,9 +1,12 @@
 // import { fchown } from "fs";
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
 import React, { useEffect, useState } from "react";
+import clsx from "clsx";
 import "./App.scss";
 import tracks from "./tracks";
 import { forEachChild } from "typescript";
+import { addAbortSignal } from "stream";
+// import { TrackKey, Filter, Sort } from "./react-app-env";
 
 export default App;
 
@@ -13,6 +16,26 @@ const MENU_ITEMS = [
   { link: "#", text: "Мои треки" },
   { link: "#", text: "Войти" },
 ];
+
+const FILTER_BAR_ELEMENTS: FilterBarOrder = ["author", "genre", "release_date"];
+
+const ALL_TRACK_KEYS = [
+  "id",
+  "name",
+  "author",
+  "release_date",
+  "genre",
+  "duration_in_seconds",
+  "album",
+  "logo",
+  "track_file",
+  "stared_user",
+] as const;
+const ALL_FILTER_OPTIONS = ["name", "author", "genre", "album"]; //as const;
+const ALL_SORT_OPTIONS = ["id", "release_date", "duration_in_seconds"]; //as const;
+// export type TrackKeysTuple = typeof ALL_TRACK_KEYS;
+// export type FilterTuple = typeof ALL_FILTER_OPTIONS;
+// export type SortTuple = typeof ALL_SORT_OPTIONS;
 
 const SELECTIONS = [
   {
@@ -45,80 +68,105 @@ function formatTime(secconds: number) {
   return `${mins}.${secs}`;
 }
 
+function isTrackKey(value: string): value is TrackKey {
+  return ALL_TRACK_KEYS.includes(value as TrackKey);
+}
+function isFilter(value: string): value is Filter {
+  return ALL_FILTER_OPTIONS.includes(value as Filter);
+}
+function isSort(value: string): value is Sort {
+  return ALL_SORT_OPTIONS.includes(value as Sort);
+}
+
+// const a: { asd?: { zxc: number } } = {};
+// console.log(a.asd?.zxc);
+
 // ============ end ================
 
 function App() {
-  const [userPref, setUserPref] = useState<UserPrefs>({
-    filterBarElements: ["author", "genre", "release_date"]
-  });
   const [tracksPool, setTracksPool] = useState(tracks); // getting data every time we choose playlist|log-in
+  // возможно стоит сделать tracksPool обычной переменной - чтобы лишний раз не рендерить (далее будет sortedTracks для отображения состояния плейлиста)
   const [sortedTracks, setSortedTracks] = useState(tracksPool); // being updated every time we modify filters
-  const [currnetTracksQueue, setCurrentTracksQueue] = useState(tracksPool); // getting tracks from sortedTracks after track was clicked
+  const [currnetTracksQueue, setCurrentTracksQueue] = useState(tracksPool); // getting tracks from sortedTracks after track was clicked; It is to remember tracks order when we browse other playlists
   const [trackInPlay, setTrackInPlay] = useState(tracksPool[0]); // first currnetTracksQueue's track at the beginning, than track in play
-  const [checkedFilters, setCheckedFilters] = useState(() => {
-    const result: CheckedFilters = {};
-    userPref.filterBarElements.forEach((element) => {
-      if (["name", "author", "genre", "album"].includes(element)) {result[element] = []};
-    })
-    return result;
-  });
-  const [sortOption, setSortOption] = useState(() => {
-        const result: CheckedFilters = {};
-    userPref.filterBarElements.forEach((element) => {
-      if (["id", "release_date", "duration_in_seconds"].includes(element)) {result[element] = []};
-    })
-    return result;
-  });
-
-  const artistsPool = [...(new Set(tracksPool.map((track) => {return track.author})))].sort(); // getting initial filter options
-  const genresPool = [...(new Set(tracksPool.map((track) => {return track.genre})))].sort(); // getting initial filter options
-
+  const [checkedFilters, setCheckedFilters] = useState<FilterOptions>();
+  const [sortOption, setSortOption] = useState<SortOption>();
+  const [areSelectionsReady, setSelectionsReadiness] = useState(false);
+  const [areTracksReady, setTracksReadiness] = useState(false);
 
   // написать функцию которая будет сортировать треклист: trackList + checkedFilters => sortedTracks
   // написать функцию onFilterChange которая будет обновлять checkedFilters и сортировать tracklist
 
-  const handleFilterChange = (filterKey: string, filterOption: string) => {
-    console.log("Filter: " + filterKey + ": " + filterOption);
-
-    if (checkedFilters[filterKey].includes(filterOption)) {
-
-    }
+  function emulateContentDownload() {
+    setSelectionsReadiness(true);
+    setTracksReadiness(true);
   }
 
-  const handleSortChange = (filterKey: string, filterOption: string) => {
-    console.log("Sort: " + filterKey + ": " + filterOption);
-  
-    if (sortOption[filterKey][0] === filterOption) {
-      setSortOption(() => {
-        const result: CheckedFilters = {[filterKey]: []}
-        return result;
-      })
+  const handleFilterChange = (filterKey: string, filterOption: string) => {
+    console.log("Filter: " + filterKey + ": " + filterOption);
+    let duplicateFilters: FilterOptions | undefined = { ...checkedFilters };
+
+    if (
+      duplicateFilters[filterKey as keyof typeof duplicateFilters]?.delete(
+        filterOption
+      )
+    ) {
+      duplicateFilters[filterKey as keyof typeof duplicateFilters]?.size ||
+        delete duplicateFilters[filterKey as keyof typeof duplicateFilters];
+
+      Object.keys(duplicateFilters).length || (duplicateFilters = undefined);
+
+      setCheckedFilters(duplicateFilters);
       return;
     }
 
-    setSortOption(() => {
-      const result: CheckedFilters = {[filterKey]: [filterOption]}
-      return result;
-    })
-  }
+    duplicateFilters[filterKey as keyof typeof duplicateFilters] = new Set(
+      duplicateFilters[filterKey as keyof typeof duplicateFilters]
+    );
+    duplicateFilters[filterKey as keyof typeof duplicateFilters]?.add(
+      filterOption
+    );
 
-  function getFilterOptionsByCategory (tracksArray: track[], category: filterCtgs) {
-    return (
-      [...(new Set(tracksArray.map((track) => {return track[category]})))].sort() as filterCtgs[]
-    )
+    setCheckedFilters(duplicateFilters);
+  };
+
+  const handleSortChange = (filterKey: string, filterOption: string) => {
+    console.log("Sort: " + filterKey + ": " + filterOption);
+
+    if (
+      sortOption &&
+      sortOption[filterKey as keyof typeof sortOption] === filterOption
+    ) {
+      setSortOption(undefined);
+      return;
+    }
+
+    setSortOption({ [filterKey]: filterOption });
+  };
+
+  function getFilterOptionsByCategory(tracksArray: track[], category: Filter) {
+    return new Set(
+      tracksArray
+        .map((track) => {
+          return track[category];
+        })
+        .sort()
+    );
   }
 
   function gatherFilterProps() {
-    // надо как-то избавиться от "any"
-    const filterOptions: any = {};
-    userPref.filterBarElements.forEach((element) => {
-      if (["name", "author", "genre", "album"].includes(element)) {
-        filterOptions[element] = getFilterOptionsByCategory(sortedTracks, element as filterCtgs);
+    const filterOptions: FilterOptions = {};
+    FILTER_BAR_ELEMENTS.forEach((element) => {
+      if (isFilter(element)) {
+        filterOptions[element] = getFilterOptionsByCategory(
+          sortedTracks,
+          element
+        );
       }
-    })
+    });
 
-    const result: filterSortProps = {
-      filterBarOrder: userPref.filterBarElements,
+    const result: FilterAndSortProps = {
+      filterBarOrder: FILTER_BAR_ELEMENTS,
       filterOptions: filterOptions,
       checkedFilters: checkedFilters,
       checkedSorting: sortOption,
@@ -128,14 +176,22 @@ function App() {
     return result;
   }
 
+  useEffect(() => {
+    const timerID = setTimeout(() => {
+      emulateContentDownload();
+      console.log("downloaded");
+    }, 2000);
+
+    return () => {
+      clearTimeout(timerID);
+    };
+  }, []);
+
   return (
     <div className="wrapper">
       <div className="container">
-        <Main
-          sortedTracks={sortedTracks}
-          filterProps={gatherFilterProps()}
-        />
-        <Bar currentTrack={trackInPlay}/>
+        <Main sortedTracks={sortedTracks} filterProps={gatherFilterProps()} />
+        <Bar currentTrack={trackInPlay} />
         <footer className="footer"></footer>
       </div>
     </div>
@@ -145,24 +201,24 @@ function App() {
 function Main(props: mainProps) {
   return (
     <main className="main">
-      <Navigation navItems={MENU_ITEMS} isOpened={false}/>
+      <Navigation navItems={MENU_ITEMS} isOpened={false} />
       <CenterBlock {...props} />
-      <Sidebar className="main__sidebar" />
+      <Sidebar />
     </main>
   );
 }
 
 function Navigation(props: navProps) {
   const [isMenuVisible, setMenuVisibility] = useState(props.isOpened);
-  
+
   const toggleMenuVisibility = () => {
     setMenuVisibility(!isMenuVisible);
-  }
+  };
 
   return (
-    <nav className="main__nav nav">
+    <nav className={clsx("main__nav", "nav")}>
       <Logo />
-      <Burger onClick={toggleMenuVisibility}/>
+      <Burger onClick={toggleMenuVisibility} />
       {isMenuVisible && <Menu listOfItems={props.navItems} />}
     </nav>
   );
@@ -170,7 +226,7 @@ function Navigation(props: navProps) {
 
 function Logo() {
   return (
-    <div className="nav__logo logo">
+    <div className={clsx("nav__logo", "logo")}>
       <img
         src="./img/logo.png"
         aria-label="skypro logo"
@@ -182,7 +238,7 @@ function Logo() {
 
 function Burger(props: burgerProps) {
   return (
-    <div className="nav__burger burger" onClick={props.onClick}>
+    <div className={clsx("nav__burger", "burger")} onClick={props.onClick}>
       <span className="burger__line"></span>
       <span className="burger__line"></span>
       <span className="burger__line"></span>
@@ -192,7 +248,7 @@ function Burger(props: burgerProps) {
 
 function Menu(props: menuProps) {
   return (
-    <div className="nav__menu menu">
+    <div className={clsx("nav__menu", "menu")}>
       <ul className="menu__list">
         {props.listOfItems.map((item) => (
           <MenuItem link={item.link} text={item.text} key={item.text} />
@@ -241,122 +297,189 @@ function SearchBar() {
   );
 }
 
-function FilterBar(props: filterSortProps) {
-  // Комменты чтобы потом удалить. Куча сомнений и допущений. Решил записать их;
-  // Пока нет понимания как по итогу будет работать всё приложение целиком (какие будут стейты в самом App, до куда поднимать локальные стейты, где какие обработчики будут);
-  // Предполагаю что в FilterBar будет приходить пропс типа filterProps для того чтобы потом всё "само" проростало внутрь компонента FilterBar; Вобщем "что отрисовывать" будем получать извне и это что-то будет храниться либо в переменных либо в стейтах App. Подобное делали в предыдущем проекте. Работает ли этот подход (передача в пропс объекта-шаблона) в React или есть более изящные решения? Мне такой подход нравится => для того чтобы отрисовать нужные компоненты необходимо просто отредактировать передаваемый шаблон;
-  // FilterBar помимо отрисовки фильтров должен иметь возможность передавать выбраные фильтры наружу(обрабатывать внешние стейты внутри) для их применения и изменения содержимого плей-листа; Вобщем FilterBar зависит от внешних пропсов и в то-же время должен иметь возможность влиять на внешние стейты;
-
+function FilterBar(props: FilterAndSortProps) {
   const allElementsMissings = {
     name: {
-      ruText: "треку"
+      ruText: "треку",
     },
     author: {
-      ruText: "исполнителю"
+      ruText: "исполнителю",
     },
     genre: {
-      ruText: "жанру"
+      ruText: "жанру",
     },
     album: {
-      ruText: "альбому"
+      ruText: "альбому",
     },
     id: {
       ruText: "номеру",
       options: {
         descending: "По убыванию",
-        increasing: "По возрастанию"
-      }
+        ascending: "По возрастанию",
+      },
     },
     release_date: {
       ruText: "дате выхода",
       options: {
         descending: "Сначала новые",
-        increasing: "Сначала старые"
-      }
+        ascending: "Сначала старые",
+      },
     },
     duration_in_seconds: {
       ruText: "продолжительности",
       options: {
         descending: "Сначала долгие",
-        increasing: "Сначала короткие"
-      }
+        ascending: "Сначала короткие",
+      },
     },
-  }
+  };
 
-  const [expandedFilter, setExpandedFilter] = useState<string|undefined>();
-  
+  const [expandedFilter, setExpandedFilter] = useState<string | undefined>();
+
   const handleButtonClick = (filterName: string) => {
-    expandedFilter === filterName ? setExpandedFilter(undefined) : setExpandedFilter(filterName);
-  }
+    expandedFilter === filterName
+      ? setExpandedFilter(undefined)
+      : setExpandedFilter(filterName);
+  };
 
   const content = props.filterBarOrder.map((name) => {
-    if (["name", "author", "genre", "album"].includes(name)) {
+    if (isFilter(name)) {
       return (
         <FilterButton
           filterName={name}
           ruText={allElementsMissings[name].ruText}
           isOpened={expandedFilter === name}
-          options={props.filterOptions[name as keyof typeof props.filterOptions]}
-          checkedOptions={props.checkedFilters && props.checkedFilters[name as keyof typeof props.checkedFilters]}
-          onBtnClick={() => {handleButtonClick(name)}}
+          options={
+            props.filterOptions[name as keyof typeof props.filterOptions]
+          }
+          checkedOptions={
+            props.checkedFilters &&
+            props.checkedFilters[name as keyof typeof props.checkedFilters]
+          }
+          onBtnClick={() => {
+            handleButtonClick(name);
+          }}
           onDropDownClick={props.onFilterChange}
-          key={name} />
+          key={name}
+        />
       );
     }
 
     return (
-      <FilterButton
-        filterName={name}
+      <SortButton
+        sortName={name}
         ruText={allElementsMissings[name].ruText}
         isOpened={expandedFilter === name}
-        options={Object.values(allElementsMissings[name]["options" as keyof typeof allElementsMissings.name])}
-        checkedOptions={props.checkedFilters && props.checkedFilters[name as keyof typeof props.checkedFilters]}
-        onBtnClick={() => {handleButtonClick(name)}}
+        options={allElementsMissings[name].options}
+        checkedOption={props.checkedSorting && props.checkedSorting[name]}
+        onBtnClick={() => {
+          handleButtonClick(name);
+        }}
         onDropDownClick={props.onSortChange}
-        key={name} />
+        key={name}
+      />
     );
   });
 
   return (
-    <div className="centerblock__filter filter">
+    <div className={clsx("centerblock__filter", "filter")}>
       <div className="filter__title">Искать по:</div>
       {content}
     </div>
   );
 }
 
-function FilterButton(props: filterButtonProps) {
+function FilterButton(props: FilterButtonProps) {
   return (
-    <div className={`filter__button-wrapper`}>
-      <div className={`filter__button${props.isOpened ? " filter__button_active" : ""} _btn-text`} onClick={props.onBtnClick}>
+    <div className="filter__button-wrapper">
+      <div
+        className={clsx(
+          "filter__button",
+          props.isOpened && "filter__button_active",
+          "_btn-text"
+        )}
+        onClick={props.onBtnClick}
+      >
         {props.ruText}
       </div>
-      {props.isOpened &&
-      <FilterButtonDropdown
-        filterName={props.filterName}
-        options={props.options}
-        checkedOptions={props.checkedOptions}
-        onDropDownClick={props.onDropDownClick} />}
+      {props.isOpened && (
+        <FilterButtonDropdown
+          filterName={props.filterName}
+          options={props.options}
+          checkedOptions={props.checkedOptions}
+          onDropDownClick={props.onDropDownClick}
+        />
+      )}
     </div>
   );
 }
 
-function FilterButtonDropdown(props: filterBtnDropdownProps) {
+function SortButton(props: SortButtonProps) {
+  return (
+    <div className="filter__button-wrapper">
+      <div
+        className={clsx(
+          "filter__button",
+          props.isOpened && "filter__button_active",
+          "_btn-text"
+        )}
+        onClick={props.onBtnClick}
+      >
+        {props.ruText}
+      </div>
+      {props.isOpened && (
+        <SortButtonDropdown
+          sortName={props.sortName}
+          options={props.options}
+          checkedOption={props.checkedOption}
+          onDropDownClick={props.onDropDownClick}
+        />
+      )}
+    </div>
+  );
+}
+
+function FilterButtonDropdown(props: FilterBtnDropdownProps) {
   return (
     <ul className="filter-button__dropdown">
-      {props.options.map((option) => {
-        let className = "dropdown__item";
-        props.checkedOptions && props.checkedOptions.includes(option) && (className = "dropdown__item_checked")
+      {Array.from(props.options).map((option) => {
         return (
           <li
-            className={className}
+            className={clsx(
+              "dropdown__item",
+              props.checkedOptions?.has(option) && "dropdown__item_checked"
+            )}
             onClick={() => {
               props.onDropDownClick(props.filterName, option);
             }}
-            key={option}>
-              {option}
+            key={option}
+          >
+            {option}
           </li>
-        )
+        );
+      })}
+    </ul>
+  );
+}
+
+function SortButtonDropdown(props: SortBtnDropdownProps) {
+  return (
+    <ul className="filter-button__dropdown">
+      {Object.keys(props.options).map((option) => {
+        return (
+          <li
+            className={clsx(
+              "dropdown__item",
+              props.checkedOption === option && "dropdown__item_checked"
+            )}
+            onClick={() => {
+              props.onDropDownClick(props.sortName, option);
+            }}
+            key={option}
+          >
+            {props.options[option as keyof typeof props.options]}
+          </li>
+        );
       })}
     </ul>
   );
@@ -364,7 +487,7 @@ function FilterButtonDropdown(props: filterBtnDropdownProps) {
 
 function Content(props: playListProps) {
   return (
-    <div className="centerblock__content" >
+    <div className="centerblock__content">
       <PlaylistTitle />
       <Playlist sortedTracks={props.sortedTracks} />
     </div>
@@ -373,11 +496,11 @@ function Content(props: playListProps) {
 
 function PlaylistTitle() {
   return (
-    <div className="content__title playlist-title">
-      <div className="playlist-title__col col01">Трек</div>
-      <div className="playlist-title__col col02">ИСПОЛНИТЕЛЬ</div>
-      <div className="playlist-title__col col03">АЛЬБОМ</div>
-      <div className="playlist-title__col col04">
+    <div className={clsx("content__title", "playlist-title")}>
+      <div className={clsx("playlist-title__col", "col01")}>Трек</div>
+      <div className={clsx("playlist-title__col", "col02")}>ИСПОЛНИТЕЛЬ</div>
+      <div className={clsx("playlist-title__col", "col03")}>АЛЬБОМ</div>
+      <div className={clsx("playlist-title__col", "col04")}>
         <svg className="playlist-title__svg" aria-label="time">
           <use xlinkHref="img/icon/sprite.svg#icon-watch"></use>
         </svg>
@@ -388,7 +511,7 @@ function PlaylistTitle() {
 
 function Playlist(props: playListProps) {
   return (
-    <div className="content__playlist playlist">
+    <div className={clsx("content__playlist", "playlist")}>
       {props.sortedTracks.map((track) => {
         return <PlaylistItem {...track} key={track.id} />;
       })}
@@ -406,11 +529,15 @@ function PlaylistItem(props: track) {
 
 function Track(props: trackProps) {
   return (
-    <div className="playlist__track track">
+    <div className={clsx("playlist__track", "track")}>
       <div className="track__title">
         <div className="track__title-image">
           <svg className="track__title-svg" aria-label="music">
-            <use xlinkHref={props.trackData.track_file}></use>
+            <use
+              xlinkHref={
+                props.trackData.logo || "img/icon/sprite.svg#icon-note"
+              }
+            ></use>
           </svg>
         </div>
         <div className="track__title-text">
@@ -433,7 +560,7 @@ function Track(props: trackProps) {
       <div className="track__time">
         <SvgImg
           className="track__time-svg"
-          aria-label="like"
+          ariaLabel="like"
           href={"img/icon/sprite.svg#icon-like"}
         />
         <span className="track__time-text">
@@ -444,10 +571,10 @@ function Track(props: trackProps) {
   );
 }
 
-function Sidebar(props: stdProps) {
+function Sidebar() {
   return (
-    <div className={`${props.className && props.className} sidebar`}>
-      <SidebarMenu className="sidebar__personal" />
+    <div className={clsx("main__sidebar", "sidebar")}>
+      <SidebarMenu />
       <div className="sidebar__block">
         <SidebarList />
       </div>
@@ -455,9 +582,9 @@ function Sidebar(props: stdProps) {
   );
 }
 
-function SidebarMenu(props: stdProps) {
+function SidebarMenu() {
   return (
-    <div className={`${props.className && props.className} sidebar-menu`}>
+    <div className={clsx("sidebar__personal", "sidebar-menu")}>
       <p className="sidebar__personal-name">Sergey.Popov</p>
       <div className="sidebar__avatar"></div>
     </div>
@@ -510,7 +637,7 @@ function PlayerBlock(props: barProps) {
 
 function Player(props: track) {
   return (
-    <div className="bar__player player">
+    <div className={clsx("bar__player", "player")}>
       <PlayerControls />
       <TrackPlay currentTrack={props} />
     </div>
@@ -527,7 +654,7 @@ function PlayerControls() {
           href="img/icon/sprite.svg#icon-prev"
         />
       </div>
-      <div className="player__btn-play _btn">
+      <div className={clsx("player__btn-play", "_btn")}>
         <SvgImg
           className="player__btn-play-svg"
           ariaLabel="play"
@@ -541,14 +668,14 @@ function PlayerControls() {
           href="img/icon/sprite.svg#icon-next"
         />
       </div>
-      <div className="player__btn-repeat _btn-icon">
+      <div className={clsx("player__btn-repeat", "_btn-icon")}>
         <SvgImg
           className="player__btn-repeat-svg"
           ariaLabel="repeat"
           href="img/icon/sprite.svg#icon-repeat"
         />
       </div>
-      <div className="player__btn-shuffle _btn-icon">
+      <div className={clsx("player__btn-shuffle", "_btn-icon")}>
         <SvgImg
           className="player__btn-shuffle-svg"
           ariaLabel="shuffle"
@@ -562,8 +689,8 @@ function PlayerControls() {
 function SvgImg(props: svgProps) {
   return (
     <svg
-      className={`${props.className && props.className} std-svg`}
-      aria-label={props.ariaLabel ? props.ariaLabel : "no desc"}
+      className={clsx(props.className, "std-svg")}
+      aria-label={`${props.ariaLabel || "no desc"}`}
     >
       <use xlinkHref={props.href}></use>
     </svg>
@@ -572,17 +699,13 @@ function SvgImg(props: svgProps) {
 
 function TrackPlay(props: trackPlayProps) {
   return (
-    <div className="player__track-play track-play">
+    <div className={clsx("player__track-play", "track-play")}>
       <div className="track-play__contain">
         <div className="track-play__image">
           <SvgImg
             className="track-play__svg"
-            aria-label="music"
-            href={
-              props.currentTrack.logo
-                ? props.currentTrack.logo
-                : "img/icon/sprite.svg#icon-note"
-            }
+            ariaLabel="music"
+            href={props.currentTrack.logo || "img/icon/sprite.svg#icon-note"}
           />
         </div>
         <div className="track-play__author">
@@ -600,7 +723,13 @@ function TrackPlay(props: trackPlayProps) {
       <div className="track-play__like-dis">
         <LikeBtn parentBlockName="track-play" />
 
-        <div className="track-play__dislike-btn dislike-btn _btn-icon">
+        <div
+          className={clsx(
+            "track-play__dislike-btn",
+            "dislike-btn",
+            "_btn-icon"
+          )}
+        >
           <svg className="track-play__dislike-svg" aria-label="dislike">
             <use xlinkHref="img/icon/sprite.svg#icon-dislike"></use>
           </svg>
@@ -613,15 +742,19 @@ function TrackPlay(props: trackPlayProps) {
 function LikeBtn(props: likeBtnProps) {
   return (
     <div
-      className={`${
-        props.parentBlockName && props.parentBlockName + "__like-btn"
-      } like-btn _btn-icon`}
+      className={clsx(
+        props.parentBlockName && props.parentBlockName + "__like-btn",
+        "like-btn",
+        "_btn-icon"
+      )}
     >
       <SvgImg
-        className={`${
-          props.parentBlockName && props.parentBlockName + "__like-svg"
-        } like-btn__like-svg like-svg`}
-        aria-label="like"
+        className={clsx(
+          props.parentBlockName && props.parentBlockName + "__like-svg",
+          "like-btn__like-svg",
+          "like-svg"
+        )}
+        ariaLabel="like"
         href={"img/icon/sprite.svg#icon-like"}
       />
     </div>
@@ -630,16 +763,16 @@ function LikeBtn(props: likeBtnProps) {
 
 function Volume() {
   return (
-    <div className="bar__volume-block volume">
+    <div className={clsx("bar__volume-block", "volume")}>
       <div className="volume__content">
         <div className="volume__image">
           <svg className="volume__svg" aria-label="volume">
             <use xlinkHref="img/icon/sprite.svg#icon-volume"></use>
           </svg>
         </div>
-        <div className="volume__progress _btn">
+        <div className={clsx("volume__progress", "_btn")}>
           <input
-            className="volume__progress-line _btn"
+            className={clsx("volume__progress-line", "_btn")}
             type="range"
             name="range"
           />
