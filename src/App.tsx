@@ -6,6 +6,7 @@ import "./App.scss";
 import tracks from "./tracks";
 import { forEachChild } from "typescript";
 import { addAbortSignal } from "stream";
+import { get } from "http";
 // import { TrackKey, Filter, Sort } from "./react-app-env";
 
 export default App;
@@ -84,25 +85,49 @@ function isSort(value: string): value is Sort {
 // ============ end ================
 
 function App() {
-  const [tracksPool, setTracksPool] = useState(tracks); // getting data every time we choose playlist|log-in
-  // возможно стоит сделать tracksPool обычной переменной - чтобы лишний раз не рендерить (далее будет sortedTracks для отображения состояния плейлиста)
-  const [sortedTracks, setSortedTracks] = useState(tracksPool); // being updated every time we modify filters
-  const [currnetTracksQueue, setCurrentTracksQueue] = useState(tracksPool); // getting tracks from sortedTracks after track was clicked; It is to remember tracks order when we browse other playlists
-  const [trackInPlay, setTrackInPlay] = useState(tracksPool[0]); // first currnetTracksQueue's track at the beginning, than track in play
+  const [tracksPool, setTracksPool] = useState<track[]|undefined>(); // getting data every time we choose playlist|log-in
+  const [selections, setSelection] = useState<typeof SELECTIONS|undefined>();
+  const [sortedTracks, setSortedTracks] = useState<track[]|undefined>(); // being updated every time we modify sorts
+  const [currnetTracksQueue, setCurrentTracksQueue] = useState<track[]|undefined>(); // getting tracks from sortedTracks after track was clicked; It is to keep tracks order when we browse other playlists
+  const [trackInPlay, setTrackInPlay] = useState<track>(); // first currnetTracksQueue's track at the beginning, than track in play
   const [checkedFilters, setCheckedFilters] = useState<FilterOptions>();
-  const [sortOption, setSortOption] = useState<SortOption>();
-  const [areSelectionsReady, setSelectionsReadiness] = useState(false);
-  const [areTracksReady, setTracksReadiness] = useState(false);
+  const [checkedSortOption, setSortOption] = useState<SortState>();
+  // const [areSelectionsReady, setSelectionsReadiness] = useState(false);
+  // const [areTracksReady, setTracksReadiness] = useState(false);
 
   // написать функцию которая будет сортировать треклист: trackList + checkedFilters => sortedTracks
   // написать функцию onFilterChange которая будет обновлять checkedFilters и сортировать tracklist
 
   function emulateContentDownload() {
-    setSelectionsReadiness(true);
-    setTracksReadiness(true);
+    // setSelectionsReadiness(true);
+    // setTracksReadiness(true);
+    setTracksPool(tracks);
+    setSelection(SELECTIONS);
+    setSortedTracks(checkedSortOption && tracksPool ? getSortedTracks(tracksPool, checkedSortOption.field, checkedSortOption.option) : tracksPool);
+    setTrackInPlay(tracksPool && tracksPool[0]);
   }
 
-  const handleFilterChange = (filterKey: string, filterOption: string) => {
+  function getSortedTracks(tracks: track[], field: Sort, option: "descending" | "ascending") {
+    const result: track[] = [];
+    tracks.forEach(track => result.push(track));
+
+    return result.sort(
+      (trackOne, trackTwo) => {
+        let a = trackOne[field];
+        let b = trackTwo[field];
+        if (a === b) return 0;
+        if (a === null) return -1;
+        if (b === null) return 1;
+
+        if (option === "ascending") {
+          return a < b ? -1 : 1;
+        }
+        return a > b ? -1 : 1;
+      }
+    )
+  }
+
+  const handleFilterChange = (filterKey: Filter, filterOption: string) => {
     console.log("Filter: " + filterKey + ": " + filterOption);
     let duplicateFilters: FilterOptions | undefined = { ...checkedFilters };
 
@@ -130,28 +155,28 @@ function App() {
     setCheckedFilters(duplicateFilters);
   };
 
-  const handleSortChange = (filterKey: string, filterOption: string) => {
-    console.log("Sort: " + filterKey + ": " + filterOption);
+  const handleSortChange = (sortrKey: Sort, sortOption: SortOptions) => {
+    console.log("Sort: " + sortrKey + ": " + sortOption);
 
     if (
-      sortOption &&
-      sortOption[filterKey as keyof typeof sortOption] === filterOption
+      checkedSortOption &&
+      checkedSortOption.field === sortrKey &&
+      checkedSortOption.option === sortOption
     ) {
       setSortOption(undefined);
       return;
     }
 
-    setSortOption({ [filterKey]: filterOption });
+    setSortOption({"field": sortrKey, "option": sortOption});
   };
 
-  function getFilterOptionsByCategory(tracksArray: track[], category: Filter) {
-    return new Set(
-      tracksArray
-        .map((track) => {
-          return track[category];
-        })
-        .sort()
-    );
+  function getFilterOptionsByCategory(tracksArray: track[] | undefined, category: Filter) {
+    const result = tracksArray
+      ? new Set(tracksArray
+        .map((track) => {return track[category];})
+        .sort())
+      : new Set([]);
+    return result;
   }
 
   function gatherFilterProps() {
@@ -169,7 +194,7 @@ function App() {
       filterBarOrder: FILTER_BAR_ELEMENTS,
       filterOptions: filterOptions,
       checkedFilters: checkedFilters,
-      checkedSorting: sortOption,
+      checkedSorting: checkedSortOption,
       onFilterChange: handleFilterChange,
       onSortChange: handleSortChange,
     };
@@ -191,7 +216,7 @@ function App() {
     <div className="wrapper">
       <div className="container">
         <Main sortedTracks={sortedTracks} filterProps={gatherFilterProps()} />
-        <Bar currentTrack={trackInPlay} />
+        <Bar {...trackInPlay} />
         <footer className="footer"></footer>
       </div>
     </div>
@@ -371,7 +396,7 @@ function FilterBar(props: FilterAndSortProps) {
         ruText={allElementsMissings[name].ruText}
         isOpened={expandedFilter === name}
         options={allElementsMissings[name].options}
-        checkedOption={props.checkedSorting && props.checkedSorting[name]}
+        checkedOption={props.checkedSorting?.option}
         onBtnClick={() => {
           handleButtonClick(name);
         }}
@@ -473,7 +498,7 @@ function SortButtonDropdown(props: SortBtnDropdownProps) {
               props.checkedOption === option && "dropdown__item_checked"
             )}
             onClick={() => {
-              props.onDropDownClick(props.sortName, option);
+              props.onDropDownClick(props.sortName, option as SortOptions);
             }}
             key={option}
           >
@@ -510,6 +535,11 @@ function PlaylistTitle() {
 }
 
 function Playlist(props: playListProps) {
+  if (!props.sortedTracks) {
+    return (
+      <PlayListItemPlug />
+    )
+  }
   return (
     <div className={clsx("content__playlist", "playlist")}>
       {props.sortedTracks.map((track) => {
@@ -517,6 +547,14 @@ function Playlist(props: playListProps) {
       })}
     </div>
   );
+}
+
+function PlayListItemPlug() {
+  return (
+    <div className={clsx("playlist__item", "playlist__item_plug")}>
+
+    </div>
+  )
 }
 
 function PlaylistItem(props: track) {
@@ -615,7 +653,7 @@ function SidebarItem(props: selection) {
   );
 }
 
-function Bar(props: barProps) {
+function Bar(props?: track) {
   return (
     <div className="bar">
       <div className="bar__content">
@@ -626,20 +664,28 @@ function Bar(props: barProps) {
   );
 }
 
-function PlayerBlock(props: barProps) {
+function PlayerBlock(props: track) {
   return (
     <div className="bar__player-block">
-      <Player {...props.currentTrack} />
+      <Player {...props} />
       <Volume />
     </div>
   );
 }
 
-function Player(props: track) {
+function Player(props?: track) {
+  if (!props) {
+    return (
+    <div className={clsx("bar__player", "player")}>
+      <PlayerControls />
+      <div className={clsx("player__track-play_plug", "track-play_plug")}></div>
+    </div>
+    )
+  }
   return (
     <div className={clsx("bar__player", "player")}>
       <PlayerControls />
-      <TrackPlay currentTrack={props} />
+      <TrackPlay {...props} />
     </div>
   );
 }
@@ -697,7 +743,7 @@ function SvgImg(props: svgProps) {
   );
 }
 
-function TrackPlay(props: trackPlayProps) {
+function TrackPlay(props: track) {
   return (
     <div className={clsx("player__track-play", "track-play")}>
       <div className="track-play__contain">
@@ -705,17 +751,17 @@ function TrackPlay(props: trackPlayProps) {
           <SvgImg
             className="track-play__svg"
             ariaLabel="music"
-            href={props.currentTrack.logo || "img/icon/sprite.svg#icon-note"}
+            href={props.logo || "img/icon/sprite.svg#icon-note"}
           />
         </div>
         <div className="track-play__author">
           <a className="track-play__author-link" href="http://">
-            {props.currentTrack.name}
+            {props.name}
           </a>
         </div>
         <div className="track-play__album">
           <a className="track-play__album-link" href="http://">
-            {props.currentTrack.author}
+            {props.author}
           </a>
         </div>
       </div>

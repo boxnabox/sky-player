@@ -12,6 +12,8 @@ type TrackKey =
 type Filter = "name" | "author" | "genre" | "album";
 type Sort = "id" | "release_date" | "duration_in_seconds";
 
+type SortOptions = "descending" | "ascending";
+
 // interface stdProps {
 //   className?: string;
 // }
@@ -39,7 +41,7 @@ interface burgerProps {
 }
 
 interface mainProps {
-  sortedTracks: track[];
+  sortedTracks?: track[];
   filterProps: FilterAndSortProps;
 }
 
@@ -49,19 +51,20 @@ type FilterOptions = {
   [key in Filter]?: Set<string>;
 };
 
-type SortOption = {
-  [key in Sort]?: descending | ascending;
+type SortState = {
+  field: Sort
+  option: "descending" | "ascending";
 };
 
-type SortOption = {
-  [key in Sort]?: {
-    descending: string;
-    ascending: string;
-  };
-};
+// type SortOption = {
+//   [key in Sort]?: {
+//     descending: string;
+//     ascending: string;
+//   };
+// };
 
 type CheckedSorting = {
-  [key in Sort]?: "descending" | "ascending";
+  [key in Sort]?: SortOptions;
 };
 
 interface FilterAndSortProps {
@@ -70,9 +73,9 @@ interface FilterAndSortProps {
     [key: Filter]: Set<string>;
   };
   checkedFilters?: FilterOptions;
-  checkedSorting?: CheckedSorting;
-  onFilterChange: (filterName: string, filterOption: string) => void;
-  onSortChange: (filterName: string, filterOption: string) => void;
+  checkedSorting?: SortState;
+  onFilterChange: (filterName: Filter, filterOption: string) => void;
+  onSortChange: (sortName: Sort, filterOption: SortOptions) => void;
 }
 
 interface FilterButtonProps {
@@ -82,7 +85,7 @@ interface FilterButtonProps {
   options: Set<string>;
   checkedOptions?: Set<string>;
   onBtnClick: () => void;
-  onDropDownClick: (filterName: string, filterOption: string) => void;
+  onDropDownClick: (filterName: Filter, filterOption: string) => void;
 }
 
 interface SortButtonProps {
@@ -95,28 +98,28 @@ interface SortButtonProps {
   };
   checkedOption?: "descending" | "ascending";
   onBtnClick: () => void;
-  onDropDownClick: (filterName: string, filterOption: string) => void;
+  onDropDownClick: (sortName: Sort, filterOption: SortOptions) => void;
 }
 
 interface FilterBtnDropdownProps {
-  filterName: string;
+  filterName: Filter;
   options: Set<string>;
   checkedOptions?: Set<string>;
-  onDropDownClick: (filterName: string, filterOption: string) => void;
+  onDropDownClick: (filterName: Filter, filterOption: string) => void;
 }
 
 interface SortBtnDropdownProps {
-  sortName: string;
+  sortName: Sort;
   options: {
     descending: string;
     ascending: string;
   };
   checkedOption?: "descending" | "ascending";
-  onDropDownClick: (sortName: string, sortOption: string) => void;
+  onDropDownClick: (sortName: Sort, sortOption: SortOptions) => void;
 }
 
 interface playListProps {
-  sortedTracks: track[];
+  sortedTracks?: track[];
 }
 
 interface trackProps {
@@ -151,7 +154,7 @@ interface track {
 }
 
 interface barProps {
-  currentTrack: track;
+  currentTrack?: track;
 }
 
 interface user {

@@ -41,7 +41,7 @@
     ]
   },
   "devDependencies": {
-    "clsx": "2.0.0",
+    "clsx": "^2.0.0",
     "sass": "1.62.1"
   }
 }
