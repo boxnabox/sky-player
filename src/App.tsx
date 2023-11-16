@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import "./App.scss";
 import tracks from "./tracks";
-import { forEachChild } from "typescript";
+import { forEachChild, isPropertySignature } from "typescript";
 import { addAbortSignal } from "stream";
 import { get } from "http";
 // import { TrackKey, Filter, Sort } from "./react-app-env";
@@ -92,20 +92,22 @@ function App() {
   const [trackInPlay, setTrackInPlay] = useState<track>(); // first currnetTracksQueue's track at the beginning, than track in play
   const [checkedFilters, setCheckedFilters] = useState<FilterOptions>();
   const [checkedSortOption, setSortOption] = useState<SortState>();
-  // const [areSelectionsReady, setSelectionsReadiness] = useState(false);
-  // const [areTracksReady, setTracksReadiness] = useState(false);
 
   // написать функцию которая будет сортировать треклист: trackList + checkedFilters => sortedTracks
   // написать функцию onFilterChange которая будет обновлять checkedFilters и сортировать tracklist
 
   function emulateContentDownload() {
-    // setSelectionsReadiness(true);
-    // setTracksReadiness(true);
     setTracksPool(tracks);
+    console.log(tracksPool);
+
     setSelection(SELECTIONS);
     setSortedTracks(checkedSortOption && tracksPool ? getSortedTracks(tracksPool, checkedSortOption.field, checkedSortOption.option) : tracksPool);
+    console.log(sortedTracks);
+
     setTrackInPlay(tracksPool && tracksPool[0]);
+    console.log("emulated download");
   }
+
 
   function getSortedTracks(tracks: track[], field: Sort, option: "descending" | "ascending") {
     const result: track[] = [];
@@ -204,24 +206,24 @@ function App() {
   useEffect(() => {
     const timerID = setTimeout(() => {
       emulateContentDownload();
-      console.log("downloaded");
     }, 2000);
 
     return () => {
       clearTimeout(timerID);
     };
-  }, []);
+  },[]);
 
   return (
     <div className="wrapper">
       <div className="container">
         <Main sortedTracks={sortedTracks} filterProps={gatherFilterProps()} />
-        <Bar {...trackInPlay} />
+        <Bar currentTrack={trackInPlay} />
         <footer className="footer"></footer>
       </div>
     </div>
   );
 }
+
 
 function Main(props: mainProps) {
   return (
@@ -653,7 +655,7 @@ function SidebarItem(props: selection) {
   );
 }
 
-function Bar(props?: track) {
+function Bar(props: barProps) {
   return (
     <div className="bar">
       <div className="bar__content">
@@ -664,7 +666,7 @@ function Bar(props?: track) {
   );
 }
 
-function PlayerBlock(props: track) {
+function PlayerBlock(props: barProps) {
   return (
     <div className="bar__player-block">
       <Player {...props} />
@@ -673,8 +675,8 @@ function PlayerBlock(props: track) {
   );
 }
 
-function Player(props?: track) {
-  if (!props) {
+function Player(props: barProps) {
+  if (!props.currentTrack) {
     return (
     <div className={clsx("bar__player", "player")}>
       <PlayerControls />
@@ -685,7 +687,7 @@ function Player(props?: track) {
   return (
     <div className={clsx("bar__player", "player")}>
       <PlayerControls />
-      <TrackPlay {...props} />
+      <TrackPlay {...props.currentTrack} />
     </div>
   );
 }
