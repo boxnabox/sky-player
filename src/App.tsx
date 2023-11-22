@@ -1,6 +1,6 @@
 // import { fchown } from "fs";
 import { keyboard } from "@testing-library/user-event/dist/keyboard";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import "./App.scss";
 import tracks from "./tracks";
@@ -34,9 +34,6 @@ const ALL_TRACK_KEYS = [
 ] as const;
 const ALL_FILTER_OPTIONS = ["name", "author", "genre", "album"]; //as const;
 const ALL_SORT_OPTIONS = ["id", "release_date", "duration_in_seconds"]; //as const;
-// export type TrackKeysTuple = typeof ALL_TRACK_KEYS;
-// export type FilterTuple = typeof ALL_FILTER_OPTIONS;
-// export type SortTuple = typeof ALL_SORT_OPTIONS;
 
 const SELECTIONS = [
   {
@@ -86,42 +83,41 @@ function isSort(value: string): value is Sort {
 
 function App() {
   const [tracksPool, setTracksPool] = useState<track[]|undefined>(); // getting data every time we choose playlist|log-in
-  const [selections, setSelection] = useState<typeof SELECTIONS|undefined>();
-  const [sortedTracks, setSortedTracks] = useState<track[]|undefined>(); // being updated every time we modify sorts
-  const [currnetTracksQueue, setCurrentTracksQueue] = useState<track[]|undefined>(); // getting tracks from sortedTracks after track was clicked; It is to keep tracks order when we browse other playlists
-  const [trackInPlay, setTrackInPlay] = useState<track>(); // first currnetTracksQueue's track at the beginning, than track in play
   const [checkedFilters, setCheckedFilters] = useState<FilterOptions>();
   const [checkedSortOption, setSortOption] = useState<SortState>();
+  const [currnetTracksQueue, setCurrentTracksQueue] = useState<track[]|undefined>(); // getting tracks from sortedTracks after track was clicked; It is to keep tracks order when we browse other playlists
+  const [trackInPlay, setTrackInPlay] = useState<track>(); // first currnetTracksQueue's track at the beginning, than track in play
+  const [selections, setSelection] = useState<typeof SELECTIONS|undefined>();
+
+  const sortedTracks = useMemo(() => {
+    if (!tracksPool) return undefined;
+    return getSortedTracks(tracksPool, checkedSortOption)
+  }, [tracksPool, checkedSortOption]); // being updated every time we modify sorts
 
   // написать функцию которая будет сортировать треклист: trackList + checkedFilters => sortedTracks
-  // написать функцию onFilterChange которая будет обновлять checkedFilters и сортировать tracklist
 
   function emulateContentDownload() {
     setTracksPool(tracks);
-    console.log(tracksPool);
-
     setSelection(SELECTIONS);
-    setSortedTracks(checkedSortOption && tracksPool ? getSortedTracks(tracksPool, checkedSortOption.field, checkedSortOption.option) : tracksPool);
-    console.log(sortedTracks);
-
     setTrackInPlay(tracksPool && tracksPool[0]);
-    console.log("emulated download");
+    console.log("downloaded");
   }
 
-
-  function getSortedTracks(tracks: track[], field: Sort, option: "descending" | "ascending") {
+  function getSortedTracks(tracksArray: track[], sort: SortState | undefined) {
     const result: track[] = [];
-    tracks.forEach(track => result.push(track));
+    tracksArray.forEach(track => result.push(track));
+
+    if (!sort) return result;
 
     return result.sort(
       (trackOne, trackTwo) => {
-        let a = trackOne[field];
-        let b = trackTwo[field];
+        let a = trackOne[sort.field];
+        let b = trackTwo[sort.field];
         if (a === b) return 0;
         if (a === null) return -1;
         if (b === null) return 1;
 
-        if (option === "ascending") {
+        if (sort.option === "ascending") {
           return a < b ? -1 : 1;
         }
         return a > b ? -1 : 1;
