@@ -395,7 +395,7 @@ body {
     margin-bottom: 12px;
   }
 
-  &__track {
+  &__track, &__track-plug {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -428,8 +428,6 @@ body {
     fill: transparent;
     stroke: #4e4e4e;
   }
-
-  //&__title-text {}
 
   &__title-link {
     font-style: normal;
@@ -474,8 +472,6 @@ body {
     color: #696969;
   }
 
-  //&__time {}
-
   &__time-svg {
     width: 14px;
     height: 12px;
@@ -491,6 +487,46 @@ body {
     line-height: 24px;
     text-align: right;
     color: #696969;
+  }
+}
+
+.track-plug {
+  &__title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 447px;
+  }
+
+  &__title-image {
+    width: 51px;
+    height: 51px;
+    padding: 16px;
+    margin-right: 17px;
+    background: #313131;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__title-text {
+    width: 329px;
+    height: 19px;
+    flex-shrink: 0;
+    background: #313131;
+  }
+
+  &__author {
+    width: 271px;
+    height: 19px;
+    margin-right: 50px;
+    background: #313131;
+  }
+
+  &__album {
+    width: 305px;
+    height: 19px;
+    background: #313131;
   }
 }
 
@@ -537,6 +573,16 @@ body {
     width: 250px;
     height: 150px;
 
+    &:not(:last-child) {
+      margin-bottom: 30px;
+    }
+  }
+
+  .sidebar-item-plug {
+    width: 250px;
+    height: 150px;
+    background: #313131;
+    
     &:not(:last-child) {
       margin-bottom: 30px;
     }

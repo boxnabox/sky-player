@@ -43,6 +43,11 @@ interface burgerProps {
 interface mainProps {
   sortedTracks?: track[];
   filterProps: FilterAndSortProps;
+  tracksSelection: TracksSelection[] | undefined
+}
+
+interface sidebarProps {
+  tracksSelection: TracksSelection[] | undefined
 }
 
 type FilterBarOrder = (Filter | Sort)[];
@@ -165,7 +170,7 @@ interface user {
   email: string;
 }
 
-interface selection {
+interface TracksSelection {
   name: string;
   href: string;
   imgSrc: string;

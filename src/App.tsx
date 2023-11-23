@@ -202,7 +202,7 @@ function App() {
   useEffect(() => {
     const timerID = setTimeout(() => {
       emulateContentDownload();
-    }, 2000);
+    }, 3000);
 
     return () => {
       clearTimeout(timerID);
@@ -212,7 +212,7 @@ function App() {
   return (
     <div className="wrapper">
       <div className="container">
-        <Main sortedTracks={sortedTracks} filterProps={gatherFilterProps()} />
+        <Main sortedTracks={sortedTracks} filterProps={gatherFilterProps()} tracksSelection={selections} />
         <Bar currentTrack={trackInPlay} />
         <footer className="footer"></footer>
       </div>
@@ -220,13 +220,12 @@ function App() {
   );
 }
 
-
 function Main(props: mainProps) {
   return (
     <main className="main">
       <Navigation navItems={MENU_ITEMS} isOpened={false} />
       <CenterBlock {...props} />
-      <Sidebar />
+      <Sidebar tracksSelection={props.tracksSelection}/>
     </main>
   );
 }
@@ -534,8 +533,14 @@ function PlaylistTitle() {
 
 function Playlist(props: playListProps) {
   if (!props.sortedTracks) {
+    const result = [];
+    for (let i = 0; i < 19; i++) {
+      result.push(<PlayListItemPlug key={i}/>)
+    }
     return (
-      <PlayListItemPlug />
+      <div className={clsx("content__playlist", "playlist")}>
+        {result}
+      </div>
     )
   }
   return (
@@ -547,20 +552,20 @@ function Playlist(props: playListProps) {
   );
 }
 
-function PlayListItemPlug() {
-  return (
-    <div className={clsx("playlist__item", "playlist__item_plug")}>
-
-    </div>
-  )
-}
-
 function PlaylistItem(props: track) {
   return (
     <div className="playlist__item">
       <Track trackData={props} />
     </div>
   );
+}
+
+function PlayListItemPlug() {
+  return (
+    <div className={clsx("playlist__item", "playlist__item_plug")}>
+      <TrackPlug />
+    </div>
+  )
 }
 
 function Track(props: trackProps) {
@@ -607,12 +612,31 @@ function Track(props: trackProps) {
   );
 }
 
-function Sidebar() {
+function TrackPlug() {
+  return (
+    <div className={clsx("playlist__track-plug", "track-plug")}>
+      <div className="track-plug__title">
+        <div className="track-plug__title-image">
+        </div>
+        <div className="track-plug__title-text">
+        </div>
+      </div>
+      <div className="track-plug__author">
+      </div>
+      <div className="track-plug__album">
+      </div>
+      <div className="track-plug__time">
+      </div>
+    </div>
+  );
+}
+
+function Sidebar(props: sidebarProps) {
   return (
     <div className={clsx("main__sidebar", "sidebar")}>
       <SidebarMenu />
       <div className="sidebar__block">
-        <SidebarList />
+        <SidebarList tracksSelection={props.tracksSelection}/>
       </div>
     </div>
   );
@@ -627,17 +651,29 @@ function SidebarMenu() {
   );
 }
 
-function SidebarList() {
+function SidebarList(props: sidebarProps) {
+  if (!props.tracksSelection) {
+    const result = [];
+    for (let i = 0; i < 3; i++) {
+      result.push(<SidebarItemPlug key={i}/>)
+    }
+    return (
+      <div className="sidebar__list">
+        {result}
+      </div>
+    )
+  }
+
   return (
     <div className="sidebar__list">
-      {SELECTIONS.map((selection) => {
+      {props.tracksSelection.map((selection) => {
         return <SidebarItem {...selection} key={selection.name} />;
       })}
     </div>
   );
 }
 
-function SidebarItem(props: selection) {
+function SidebarItem(props: TracksSelection) {
   return (
     <div className="sidebar__item">
       <a className="sidebar__link" href={props.href}>
@@ -647,6 +683,13 @@ function SidebarItem(props: selection) {
           aria-label={props.imgAlt}
         />
       </a>
+    </div>
+  );
+}
+
+function SidebarItemPlug() {
+  return (
+    <div className="sidebar__item sidebar-item-plug">
     </div>
   );
 }
