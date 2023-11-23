@@ -61,13 +61,6 @@ type SortState = {
   option: "descending" | "ascending";
 };
 
-// type SortOption = {
-//   [key in Sort]?: {
-//     descending: string;
-//     ascending: string;
-//   };
-// };
-
 type CheckedSorting = {
   [key in Sort]?: SortOptions;
 };
@@ -158,7 +151,7 @@ interface track {
   stared_user: user[];
 }
 
-interface barProps {
+interface PlayerBarProps {
   currentTrack?: track;
 }
 

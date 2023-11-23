@@ -4,9 +4,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import "./App.scss";
 import tracks from "./tracks";
-import { forEachChild, isPropertySignature } from "typescript";
-import { addAbortSignal } from "stream";
-import { get } from "http";
+// import { forEachChild, isPropertySignature } from "typescript";
+// import { addAbortSignal } from "stream";
+// import { get } from "http";
 // import { TrackKey, Filter, Sort } from "./react-app-env";
 
 export default App;
@@ -32,8 +32,8 @@ const ALL_TRACK_KEYS = [
   "track_file",
   "stared_user",
 ] as const;
-const ALL_FILTER_OPTIONS = ["name", "author", "genre", "album"]; //as const;
-const ALL_SORT_OPTIONS = ["id", "release_date", "duration_in_seconds"]; //as const;
+const ALL_FILTER_OPTIONS = ["name", "author", "genre", "album"] as const;
+const ALL_SORT_OPTIONS = ["id", "release_date", "duration_in_seconds"] as const;
 
 const SELECTIONS = [
   {
@@ -57,6 +57,7 @@ const SELECTIONS = [
 ];
 
 // auxiliary =======================
+
 function formatTime(secconds: number) {
   let mins: string | number = Math.floor(secconds / 60);
   let secs: string | number = secconds % 60;
@@ -76,9 +77,6 @@ function isSort(value: string): value is Sort {
   return ALL_SORT_OPTIONS.includes(value as Sort);
 }
 
-// const a: { asd?: { zxc: number } } = {};
-// console.log(a.asd?.zxc);
-
 // ============ end ================
 
 function App() {
@@ -86,20 +84,17 @@ function App() {
   const [checkedFilters, setCheckedFilters] = useState<FilterOptions>();
   const [checkedSortOption, setSortOption] = useState<SortState>();
   const [currnetTracksQueue, setCurrentTracksQueue] = useState<track[]|undefined>(); // getting tracks from sortedTracks after track was clicked; It is to keep tracks order when we browse other playlists
-  const [trackInPlay, setTrackInPlay] = useState<track>(); // first currnetTracksQueue's track at the beginning, than track in play
   const [selections, setSelection] = useState<typeof SELECTIONS|undefined>();
 
+  const trackInPlay = useMemo(() => {return tracksPool && tracksPool[0]}, [tracksPool])
   const sortedTracks = useMemo(() => {
     if (!tracksPool) return undefined;
     return getSortedTracks(tracksPool, checkedSortOption)
   }, [tracksPool, checkedSortOption]); // being updated every time we modify sorts
 
-  // написать функцию которая будет сортировать треклист: trackList + checkedFilters => sortedTracks
-
   function emulateContentDownload() {
     setTracksPool(tracks);
     setSelection(SELECTIONS);
-    setTrackInPlay(tracksPool && tracksPool[0]);
     console.log("downloaded");
   }
 
@@ -694,7 +689,7 @@ function SidebarItemPlug() {
   );
 }
 
-function Bar(props: barProps) {
+function Bar(props: PlayerBarProps) {
   return (
     <div className="bar">
       <div className="bar__content">
@@ -705,7 +700,7 @@ function Bar(props: barProps) {
   );
 }
 
-function PlayerBlock(props: barProps) {
+function PlayerBlock(props: PlayerBarProps) {
   return (
     <div className="bar__player-block">
       <Player {...props} />
@@ -714,19 +709,19 @@ function PlayerBlock(props: barProps) {
   );
 }
 
-function Player(props: barProps) {
+function Player(props: PlayerBarProps) {
   if (!props.currentTrack) {
     return (
     <div className={clsx("bar__player", "player")}>
       <PlayerControls />
-      <div className={clsx("player__track-play_plug", "track-play_plug")}></div>
+      <TrackOnPlay />
     </div>
     )
   }
   return (
     <div className={clsx("bar__player", "player")}>
       <PlayerControls />
-      <TrackPlay {...props.currentTrack} />
+      <TrackOnPlay currentTrack={props.currentTrack} />
     </div>
   );
 }
@@ -784,40 +779,70 @@ function SvgImg(props: svgProps) {
   );
 }
 
-function TrackPlay(props: track) {
+function TrackOnPlay({currentTrack}: PlayerBarProps) {
+  if (!currentTrack) {
+    return (
+      <div className={clsx("player__track-on-play", "track-on-play-plug")}>
+        <div className={clsx("track-on-play__contain", "track-on-play-plug__contain")}>
+          <div className={clsx("track-on-play__image", "track-on-play-plug__image")}>
+          </div>
+          <div className={clsx("track-on-play__name", "track-on-play-plug__name")}>
+          </div>
+          <div className={clsx("track-on-play__author", "track-on-play-plug__author")}>
+          </div>
+        </div>
+  
+        <div className="track-on-play__like-dis">
+          <LikeBtn parentBlockName="track-on-play" />
+  
+          <div
+            className={clsx(
+              "track-on-play__dislike-btn",
+              "dislike-btn",
+              "_btn-icon"
+            )}
+          >
+            <svg className="track-on-play__dislike-svg" aria-label="dislike">
+              <use xlinkHref="img/icon/sprite.svg#icon-dislike"></use>
+            </svg>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className={clsx("player__track-play", "track-play")}>
-      <div className="track-play__contain">
-        <div className="track-play__image">
+    <div className={clsx("player__track-on-play", "track-on-play")}>
+      <div className="track-on-play__contain">
+        <div className="track-on-play__image">
           <SvgImg
-            className="track-play__svg"
+            className="track-on-play__svg"
             ariaLabel="music"
-            href={props.logo || "img/icon/sprite.svg#icon-note"}
+            href={currentTrack.logo || "img/icon/sprite.svg#icon-note"}
           />
         </div>
-        <div className="track-play__author">
-          <a className="track-play__author-link" href="http://">
-            {props.name}
+        <div className="track-on-play__name">
+          <a className="track-on-play__name-link" href="http://">
+            {currentTrack.name}
           </a>
         </div>
-        <div className="track-play__album">
-          <a className="track-play__album-link" href="http://">
-            {props.author}
+        <div className="track-on-play__author">
+          <a className="track-on-play__author-link" href="http://">
+            {currentTrack.author}
           </a>
         </div>
       </div>
 
-      <div className="track-play__like-dis">
-        <LikeBtn parentBlockName="track-play" />
+      <div className="track-on-play__like-dis">
+        <LikeBtn parentBlockName="track-on-play" />
 
         <div
           className={clsx(
-            "track-play__dislike-btn",
+            "track-on-play__dislike-btn",
             "dislike-btn",
             "_btn-icon"
           )}
         >
-          <svg className="track-play__dislike-svg" aria-label="dislike">
+          <svg className="track-on-play__dislike-svg" aria-label="dislike">
             <use xlinkHref="img/icon/sprite.svg#icon-dislike"></use>
           </svg>
         </div>

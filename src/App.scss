@@ -296,7 +296,7 @@ body {
 
 .filter-button__dropdown {
   width: 288px;
-  height: 386px;
+  max-height: 294px;
   padding: 34px;
   border-radius: 12px;
   background-color: #313131;
@@ -582,7 +582,7 @@ body {
     width: 250px;
     height: 150px;
     background: #313131;
-    
+
     &:not(:last-child) {
       margin-bottom: 30px;
     }
@@ -714,18 +714,18 @@ body {
     stroke: #696969;
   }
 
-  &__track-play {
+  &__track-on-play {
     display: flex;
     flex-direction: row;
   }
 }
 
-.track-play {
+.track-on-play {
   &__contain {
     width: auto;
     display: grid;
     grid-template-columns: auto 1fr;
-    grid-template-areas: "image author" "image album";
+    grid-template-areas: "image album" "image author";
     align-items: center;
   }
 
@@ -749,27 +749,27 @@ body {
 
   &__author {
     grid-area: author;
-    min-width: 49px;
+    width: auto;
   }
 
   &__author-link {
     font-style: normal;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 13px;
     line-height: 24px;
     color: #ffffff;
     white-space: nowrap;
   }
 
-  &__album {
+  &__name {
     grid-area: album;
-    min-width: 49px;
+    width: auto;
   }
 
-  &__album-link {
+  &__name-link {
     font-style: normal;
     font-weight: 400;
-    font-size: 13px;
+    font-size: 16px;
     line-height: 24px;
     color: #ffffff;
   }
@@ -778,7 +778,8 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-left: 26%;
+    gap: 24px;
+    margin-left: 28px;
   }
 
   &__like-btn,
@@ -793,15 +794,28 @@ body {
     stroke: #696969;
   }
 
-  &__dislike-btn {
-    margin-left: 28.5px;
-  }
-
   &__dislike-svg {
     width: 14.34px;
     height: 13px;
     fill: transparent;
     stroke: #696969;
+  }
+}
+
+.track-on-play-plug {
+  display: flex;
+  flex-direction: row;
+
+  &__image {
+    width: 51px;
+    height: 51px;
+    background-color: #313131;
+  }
+
+  &__name, &__author {
+    width: 59px;
+    height: 15px;
+    background-color: #313131;
   }
 }
 
