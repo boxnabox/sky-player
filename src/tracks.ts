@@ -1,4 +1,4 @@
-const tracks: track[] = [
+const tracks: Track[] = [
   {
     id: 8,
     name: "Chase",

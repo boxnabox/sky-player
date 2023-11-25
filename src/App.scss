@@ -210,7 +210,7 @@ body {
     margin-bottom: 45px;
   }
 
-  &__filter {
+  &__pl-modifier {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -254,7 +254,7 @@ body {
   }
 }
 
-.filter {
+.pl-modifier {
   &__title {
     font-style: normal;
     font-weight: 400;
@@ -294,7 +294,7 @@ body {
   }
 }
 
-.filter-button__dropdown {
+.pl-modifier-button__dropdown {
   width: 288px;
   max-height: 294px;
   padding: 34px;

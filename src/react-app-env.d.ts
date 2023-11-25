@@ -1,144 +1,17 @@
-type TrackKey =
-  | "id"
-  | "name"
-  | "author"
-  | "release_date"
-  | "genre"
-  | "duration_in_seconds"
-  | "album"
-  | "logo"
-  | "track_file"
-  | "stared_user";
-type Filter = "name" | "author" | "genre" | "album";
-type Sort = "id" | "release_date" | "duration_in_seconds";
-
+type FilterKey = "name" | "author" | "genre" | "album";
+type SortKey = "id" | "release_date" | "duration_in_seconds";
+type PLModifierElems = (FilterKey | SortKey)[];
+type FilterOptions = {
+  [key in FilterKey]?: Set<string>;
+};
 type SortOptions = "descending" | "ascending";
 
-// interface stdProps {
-//   className?: string;
-// }
-
-interface CheckedFilters {
-  [key: string]: string[] | [];
-}
-
-interface linkTextProps {
-  link: string;
-  text: string;
-}
-
-interface navProps {
-  navItems: linkTextProps[];
-  isOpened: boolean;
-}
-
-interface menuProps {
-  listOfItems: linkTextProps[];
-}
-
-interface burgerProps {
-  onClick: () => void;
-}
-
-interface mainProps {
-  sortedTracks?: track[];
-  filterProps: FilterAndSortProps;
-  tracksSelection: TracksSelection[] | undefined
-}
-
-interface sidebarProps {
-  tracksSelection: TracksSelection[] | undefined
-}
-
-type FilterBarOrder = (Filter | Sort)[];
-
-type FilterOptions = {
-  [key in Filter]?: Set<string>;
-};
-
 type SortState = {
-  field: Sort
-  option: "descending" | "ascending";
+  field: SortKey
+  option: SortOptions
 };
 
-type CheckedSorting = {
-  [key in Sort]?: SortOptions;
-};
-
-interface FilterAndSortProps {
-  filterBarOrder: FilterBarOrder;
-  filterOptions: {
-    [key: Filter]: Set<string>;
-  };
-  checkedFilters?: FilterOptions;
-  checkedSorting?: SortState;
-  onFilterChange: (filterName: Filter, filterOption: string) => void;
-  onSortChange: (sortName: Sort, filterOption: SortOptions) => void;
-}
-
-interface FilterButtonProps {
-  filterName: Filter;
-  ruText: string;
-  isOpened: boolean;
-  options: Set<string>;
-  checkedOptions?: Set<string>;
-  onBtnClick: () => void;
-  onDropDownClick: (filterName: Filter, filterOption: string) => void;
-}
-
-interface SortButtonProps {
-  sortName: Sort;
-  ruText: string;
-  isOpened: boolean;
-  options: {
-    descending: string;
-    ascending: string;
-  };
-  checkedOption?: "descending" | "ascending";
-  onBtnClick: () => void;
-  onDropDownClick: (sortName: Sort, filterOption: SortOptions) => void;
-}
-
-interface FilterBtnDropdownProps {
-  filterName: Filter;
-  options: Set<string>;
-  checkedOptions?: Set<string>;
-  onDropDownClick: (filterName: Filter, filterOption: string) => void;
-}
-
-interface SortBtnDropdownProps {
-  sortName: Sort;
-  options: {
-    descending: string;
-    ascending: string;
-  };
-  checkedOption?: "descending" | "ascending";
-  onDropDownClick: (sortName: Sort, sortOption: SortOptions) => void;
-}
-
-interface playListProps {
-  sortedTracks?: track[];
-}
-
-interface trackProps {
-  trackData: track;
-}
-
-interface svgProps {
-  className?: string;
-  ariaLabel?: string;
-  href: string;
-}
-
-interface trackPlayProps {
-  currentTrack: track;
-}
-
-interface likeBtnProps {
-  parentBlockName?: string;
-}
-
-interface track {
+interface Track {
   id: number;
   name: string;
   author: string;
@@ -151,21 +24,100 @@ interface track {
   stared_user: user[];
 }
 
-interface PlayerBarProps {
-  currentTrack?: track;
-}
-
-interface user {
-  id: number;
-  username: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-}
-
 interface TracksSelection {
   name: string;
   href: string;
   imgSrc: string;
   imgAlt: string;
+}
+
+interface NavItem {
+  link: string;
+  text: string;
+}
+
+interface NavProps {
+  navItems: NavItem[];
+  isExpanded: boolean;
+}
+
+interface BurgerProps {
+  onClick: () => void;
+}
+
+interface MainProps {
+  sortedTracks?: Track[];
+  plModifierProps: PLModifierProps;
+  tracksSelection?: TracksSelection[]
+}
+
+interface PLModifierProps {
+  modifierElems: PLModifierElems;
+  filterOptions: {
+    [key: FilterKey]: Set<string>;
+  };
+  filterState?: FilterOptions;
+  checkedSorting?: SortState;
+  onFilterChange: (filterName: FilterKey, filterOption: string) => void;
+  onSortChange: (sortName: SortKey, filterOption: SortOptions) => void;
+}
+
+interface SidebarProps {
+  tracksSelection?: TracksSelection[]
+}
+
+interface FilterButtonProps extends FilterBtnDropdownProps {
+  ruText: string;
+  isOpened: boolean;
+  onBtnClick: () => void;
+}
+
+interface FilterBtnDropdownProps {
+  filterName: FilterKey;
+  options: Set<string>;
+  checkedOptions?: Set<string>;
+  onDropDownClick: (filterName: FilterKey, filterOption: string) => void;
+}
+
+interface SortButtonProps extends SortBtnDropdownProps {
+  ruText: string;
+  isOpened: boolean;
+  onBtnClick: () => void;
+}
+
+interface SortBtnDropdownProps {
+  sortName: SortKey;
+  options: {
+    descending: string;
+    ascending: string;
+  };
+  checkedOption?: SortOptions;
+  onDropDownClick: (sortName: SortKey, sortOption: SortOptions) => void;
+}
+
+interface PLProps {
+  sortedTracks?: Track[];
+}
+
+interface SVGProps {
+  className?: string;
+  ariaLabel?: string;
+  href: string;
+}
+
+interface PlayerBarProps {
+  currentTrack?: Track;
+  onLikeClick?: () => void;
+  onDisClick?: () => void;
+}
+
+interface TrackOnPlayProps {
+  track: Track;
+  onLikeClick?: () => void;
+  onDisClick?: () => void;
+}
+
+interface ReactionBtnProps {
+  parentBlockName?: string;
+  onClick?: () => void;
 }

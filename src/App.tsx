@@ -1,39 +1,35 @@
-// import { fchown } from "fs";
-import { keyboard } from "@testing-library/user-event/dist/keyboard";
 import React, { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import "./App.scss";
 import tracks from "./tracks";
-// import { forEachChild, isPropertySignature } from "typescript";
-// import { addAbortSignal } from "stream";
-// import { get } from "http";
-// import { TrackKey, Filter, Sort } from "./react-app-env";
+
 
 export default App;
 
 // plugs ==================
+
+// const ALL_TRACK_KEYS = [
+//   "id",
+//   "name",
+//   "author",
+//   "release_date",
+//   "genre",
+//   "duration_in_seconds",
+//   "album",
+//   "logo",
+//   "track_file",
+//   "stared_user",
+// ] as const;
+const ALL_FILTER_OPTIONS = ["name", "author", "genre", "album"] as const;
+// const ALL_SORT_OPTIONS = ["id", "release_date", "duration_in_seconds"] as const;
+
 const MENU_ITEMS = [
   { link: "#", text: "Главное" },
   { link: "#", text: "Мои треки" },
   { link: "#", text: "Войти" },
 ];
 
-const FILTER_BAR_ELEMENTS: FilterBarOrder = ["author", "genre", "release_date"];
-
-const ALL_TRACK_KEYS = [
-  "id",
-  "name",
-  "author",
-  "release_date",
-  "genre",
-  "duration_in_seconds",
-  "album",
-  "logo",
-  "track_file",
-  "stared_user",
-] as const;
-const ALL_FILTER_OPTIONS = ["name", "author", "genre", "album"] as const;
-const ALL_SORT_OPTIONS = ["id", "release_date", "duration_in_seconds"] as const;
+const PL_MODIFIER_BAR_ELEMENTS: PLModifierElems = ["author", "genre", "release_date"];
 
 const SELECTIONS = [
   {
@@ -67,30 +63,31 @@ function formatTime(secconds: number) {
   return `${mins}.${secs}`;
 }
 
-function isTrackKey(value: string): value is TrackKey {
-  return ALL_TRACK_KEYS.includes(value as TrackKey);
+// function isTrackKey(value: string): value is TrackKey {
+//   return ALL_TRACK_KEYS.includes(value as TrackKey);
+// }
+// function isSort(value: string): value is Sort {
+//   return ALL_SORT_OPTIONS.includes(value as Sort);
+// }
+function isFilter(value: string): value is FilterKey {
+  return ALL_FILTER_OPTIONS.includes(value as FilterKey);
 }
-function isFilter(value: string): value is Filter {
-  return ALL_FILTER_OPTIONS.includes(value as Filter);
-}
-function isSort(value: string): value is Sort {
-  return ALL_SORT_OPTIONS.includes(value as Sort);
-}
+
 
 // ============ end ================
 
 function App() {
-  const [tracksPool, setTracksPool] = useState<track[]|undefined>(); // getting data every time we choose playlist|log-in
-  const [checkedFilters, setCheckedFilters] = useState<FilterOptions>();
-  const [checkedSortOption, setSortOption] = useState<SortState>();
-  const [currnetTracksQueue, setCurrentTracksQueue] = useState<track[]|undefined>(); // getting tracks from sortedTracks after track was clicked; It is to keep tracks order when we browse other playlists
+  const [tracksPool, setTracksPool] = useState<Track[]|undefined>(); // getting data every time we choose playlist|log-in
+  const [filterState, setCheckedFilters] = useState<FilterOptions>();
+  const [sortState, setSortOption] = useState<SortState>();
+  const [currnetTracksQueue, setCurrentTracksQueue] = useState<typeof tracksPool>(); // getting tracks from sortedTracks after track was clicked; It is to keep tracks order when we browse other playlists
   const [selections, setSelection] = useState<typeof SELECTIONS|undefined>();
 
-  const trackInPlay = useMemo(() => {return tracksPool && tracksPool[0]}, [tracksPool])
+  const trackOnPlay = useMemo(() => {return tracksPool && tracksPool[0]}, [tracksPool])
   const sortedTracks = useMemo(() => {
     if (!tracksPool) return undefined;
-    return getSortedTracks(tracksPool, checkedSortOption)
-  }, [tracksPool, checkedSortOption]); // being updated every time we modify sorts
+    return getSortedTracks(tracksPool, sortState)
+  }, [tracksPool, sortState]); // being updated every time we modify sorts
 
   function emulateContentDownload() {
     setTracksPool(tracks);
@@ -98,21 +95,21 @@ function App() {
     console.log("downloaded");
   }
 
-  function getSortedTracks(tracksArray: track[], sort: SortState | undefined) {
-    const result: track[] = [];
+  function getSortedTracks(tracksArray: Track[], sortState?: SortState) {
+    const result: Track[] = [];
     tracksArray.forEach(track => result.push(track));
 
-    if (!sort) return result;
+    if (!sortState) return result;
 
     return result.sort(
       (trackOne, trackTwo) => {
-        let a = trackOne[sort.field];
-        let b = trackTwo[sort.field];
+        let a = trackOne[sortState.field];
+        let b = trackTwo[sortState.field];
         if (a === b) return 0;
         if (a === null) return -1;
         if (b === null) return 1;
 
-        if (sort.option === "ascending") {
+        if (sortState.option === "ascending") {
           return a < b ? -1 : 1;
         }
         return a > b ? -1 : 1;
@@ -120,9 +117,9 @@ function App() {
     )
   }
 
-  const handleFilterChange = (filterKey: Filter, filterOption: string) => {
+  const handleFilterChange = (filterKey: FilterKey, filterOption: string) => {
     console.log("Filter: " + filterKey + ": " + filterOption);
-    let duplicateFilters: FilterOptions | undefined = { ...checkedFilters };
+    let duplicateFilters: FilterOptions | undefined = { ...filterState };
 
     if (
       duplicateFilters[filterKey as keyof typeof duplicateFilters]?.delete(
@@ -148,22 +145,20 @@ function App() {
     setCheckedFilters(duplicateFilters);
   };
 
-  const handleSortChange = (sortrKey: Sort, sortOption: SortOptions) => {
+  const handleSortChange = (sortrKey: SortKey, sortOption: SortOptions) => {
     console.log("Sort: " + sortrKey + ": " + sortOption);
-
     if (
-      checkedSortOption &&
-      checkedSortOption.field === sortrKey &&
-      checkedSortOption.option === sortOption
+      sortState &&
+      sortState.field === sortrKey &&
+      sortState.option === sortOption
     ) {
       setSortOption(undefined);
       return;
     }
-
     setSortOption({"field": sortrKey, "option": sortOption});
   };
 
-  function getFilterOptionsByCategory(tracksArray: track[] | undefined, category: Filter) {
+  function getFilterOptionsByCategory(tracksArray: Track[] | undefined, category: FilterKey) {
     const result = tracksArray
       ? new Set(tracksArray
         .map((track) => {return track[category];})
@@ -172,9 +167,9 @@ function App() {
     return result;
   }
 
-  function gatherFilterProps() {
+  function gatherFilterBarProps() {
     const filterOptions: FilterOptions = {};
-    FILTER_BAR_ELEMENTS.forEach((element) => {
+    PL_MODIFIER_BAR_ELEMENTS.forEach((element) => {
       if (isFilter(element)) {
         filterOptions[element] = getFilterOptionsByCategory(
           sortedTracks,
@@ -183,11 +178,11 @@ function App() {
       }
     });
 
-    const result: FilterAndSortProps = {
-      filterBarOrder: FILTER_BAR_ELEMENTS,
+    const result: PLModifierProps = {
+      modifierElems: PL_MODIFIER_BAR_ELEMENTS,
       filterOptions: filterOptions,
-      checkedFilters: checkedFilters,
-      checkedSorting: checkedSortOption,
+      filterState: filterState,
+      checkedSorting: sortState,
       onFilterChange: handleFilterChange,
       onSortChange: handleSortChange,
     };
@@ -207,36 +202,43 @@ function App() {
   return (
     <div className="wrapper">
       <div className="container">
-        <Main sortedTracks={sortedTracks} filterProps={gatherFilterProps()} tracksSelection={selections} />
-        <Bar currentTrack={trackInPlay} />
+        <Main
+          sortedTracks={sortedTracks}
+          plModifierProps={gatherFilterBarProps()}
+          tracksSelection={selections}
+        />
+        <Bar currentTrack={trackOnPlay} />
         <footer className="footer"></footer>
       </div>
     </div>
   );
 }
 
-function Main(props: mainProps) {
+function Main(props: MainProps) {
   return (
     <main className="main">
-      <Navigation navItems={MENU_ITEMS} isOpened={false} />
+      <Navigation
+        navItems={MENU_ITEMS}
+        isExpanded={false}
+      />
       <CenterBlock {...props} />
       <Sidebar tracksSelection={props.tracksSelection}/>
     </main>
   );
 }
 
-function Navigation(props: navProps) {
-  const [isMenuVisible, setMenuVisibility] = useState(props.isOpened);
+function Navigation(props: NavProps) {
+  const [isExpanded, setMenuVisibility] = useState(props.isExpanded);
 
   const toggleMenuVisibility = () => {
-    setMenuVisibility(!isMenuVisible);
+    setMenuVisibility(!isExpanded);
   };
 
   return (
     <nav className={clsx("main__nav", "nav")}>
       <Logo />
       <Burger onClick={toggleMenuVisibility} />
-      {isMenuVisible && <Menu listOfItems={props.navItems} />}
+      {isExpanded && <Menu {...props} />}
     </nav>
   );
 }
@@ -253,7 +255,7 @@ function Logo() {
   );
 }
 
-function Burger(props: burgerProps) {
+function Burger(props: BurgerProps) {
   return (
     <div className={clsx("nav__burger", "burger")} onClick={props.onClick}>
       <span className="burger__line"></span>
@@ -263,11 +265,11 @@ function Burger(props: burgerProps) {
   );
 }
 
-function Menu(props: menuProps) {
+function Menu({navItems}: NavProps) {
   return (
     <div className={clsx("nav__menu", "menu")}>
       <ul className="menu__list">
-        {props.listOfItems.map((item) => (
+        {navItems.map((item) => (
           <MenuItem link={item.link} text={item.text} key={item.text} />
         ))}
       </ul>
@@ -275,7 +277,7 @@ function Menu(props: menuProps) {
   );
 }
 
-function MenuItem(props: linkTextProps) {
+function MenuItem(props: NavItem) {
   return (
     <li className="menu__item">
       <a href={props.link} className="menu__link">
@@ -285,12 +287,12 @@ function MenuItem(props: linkTextProps) {
   );
 }
 
-function CenterBlock(props: mainProps) {
+function CenterBlock(props: MainProps) {
   return (
     <div className="main__centerblock">
       <SearchBar />
       <h2 className="centerblock__h2">Треки</h2>
-      <FilterBar {...props.filterProps} />
+      <PLModifierBar {...props.plModifierProps} />
       <Content sortedTracks={props.sortedTracks} />
     </div>
   );
@@ -314,7 +316,7 @@ function SearchBar() {
   );
 }
 
-function FilterBar(props: FilterAndSortProps) {
+function PLModifierBar(props: PLModifierProps) {
   const allElementsMissings = {
     name: {
       ruText: "треку",
@@ -359,7 +361,7 @@ function FilterBar(props: FilterAndSortProps) {
       : setExpandedFilter(filterName);
   };
 
-  const content = props.filterBarOrder.map((name) => {
+  const content = props.modifierElems.map((name) => {
     if (isFilter(name)) {
       return (
         <FilterButton
@@ -370,8 +372,8 @@ function FilterBar(props: FilterAndSortProps) {
             props.filterOptions[name as keyof typeof props.filterOptions]
           }
           checkedOptions={
-            props.checkedFilters &&
-            props.checkedFilters[name as keyof typeof props.checkedFilters]
+            props.filterState &&
+            props.filterState[name as keyof typeof props.filterState]
           }
           onBtnClick={() => {
             handleButtonClick(name);
@@ -399,8 +401,8 @@ function FilterBar(props: FilterAndSortProps) {
   });
 
   return (
-    <div className={clsx("centerblock__filter", "filter")}>
-      <div className="filter__title">Искать по:</div>
+    <div className={clsx("centerblock__pl-modifier", "pl-modifier")}>
+      <div className="pl-modifier__title">Искать по:</div>
       {content}
     </div>
   );
@@ -408,11 +410,11 @@ function FilterBar(props: FilterAndSortProps) {
 
 function FilterButton(props: FilterButtonProps) {
   return (
-    <div className="filter__button-wrapper">
+    <div className="pl-modifier__button-wrapper">
       <div
         className={clsx(
-          "filter__button",
-          props.isOpened && "filter__button_active",
+          "pl-modifier__button",
+          props.isOpened && "pl-modifier__button_active",
           "_btn-text"
         )}
         onClick={props.onBtnClick}
@@ -433,11 +435,11 @@ function FilterButton(props: FilterButtonProps) {
 
 function SortButton(props: SortButtonProps) {
   return (
-    <div className="filter__button-wrapper">
+    <div className="pl-modifier__button-wrapper">
       <div
         className={clsx(
-          "filter__button",
-          props.isOpened && "filter__button_active",
+          "pl-modifier__button",
+          props.isOpened && "pl-modifier__button_active",
           "_btn-text"
         )}
         onClick={props.onBtnClick}
@@ -458,7 +460,7 @@ function SortButton(props: SortButtonProps) {
 
 function FilterButtonDropdown(props: FilterBtnDropdownProps) {
   return (
-    <ul className="filter-button__dropdown">
+    <ul className="pl-modifier-button__dropdown">
       {Array.from(props.options).map((option) => {
         return (
           <li
@@ -481,7 +483,7 @@ function FilterButtonDropdown(props: FilterBtnDropdownProps) {
 
 function SortButtonDropdown(props: SortBtnDropdownProps) {
   return (
-    <ul className="filter-button__dropdown">
+    <ul className="pl-modifier-button__dropdown">
       {Object.keys(props.options).map((option) => {
         return (
           <li
@@ -502,7 +504,7 @@ function SortButtonDropdown(props: SortBtnDropdownProps) {
   );
 }
 
-function Content(props: playListProps) {
+function Content(props: PLProps) {
   return (
     <div className="centerblock__content">
       <PlaylistTitle />
@@ -526,7 +528,7 @@ function PlaylistTitle() {
   );
 }
 
-function Playlist(props: playListProps) {
+function Playlist(props: PLProps) {
   if (!props.sortedTracks) {
     const result = [];
     for (let i = 0; i < 19; i++) {
@@ -547,10 +549,10 @@ function Playlist(props: playListProps) {
   );
 }
 
-function PlaylistItem(props: track) {
+function PlaylistItem(props: Track) {
   return (
     <div className="playlist__item">
-      <Track trackData={props} />
+      <Track {...props} />
     </div>
   );
 }
@@ -563,7 +565,7 @@ function PlayListItemPlug() {
   )
 }
 
-function Track(props: trackProps) {
+function Track(props: Track) {
   return (
     <div className={clsx("playlist__track", "track")}>
       <div className="track__title">
@@ -571,26 +573,26 @@ function Track(props: trackProps) {
           <svg className="track__title-svg" aria-label="music">
             <use
               xlinkHref={
-                props.trackData.logo || "img/icon/sprite.svg#icon-note"
+                props.logo || "img/icon/sprite.svg#icon-note"
               }
             ></use>
           </svg>
         </div>
         <div className="track__title-text">
-          <a className="track__title-link" href={props.trackData.track_file}>
-            {props.trackData.name}
+          <a className="track__title-link" href={props.track_file}>
+            {props.name}
             <span className="track__title-span"></span>
           </a>
         </div>
       </div>
       <div className="track__author">
         <a className="track__author-link" href="http://">
-          {props.trackData.author}
+          {props.author}
         </a>
       </div>
       <div className="track__album">
         <a className="track__album-link" href="http://">
-          {props.trackData.album}
+          {props.album}
         </a>
       </div>
       <div className="track__time">
@@ -600,7 +602,7 @@ function Track(props: trackProps) {
           href={"img/icon/sprite.svg#icon-like"}
         />
         <span className="track__time-text">
-          {formatTime(props.trackData.duration_in_seconds)}
+          {formatTime(props.duration_in_seconds)}
         </span>
       </div>
     </div>
@@ -626,7 +628,7 @@ function TrackPlug() {
   );
 }
 
-function Sidebar(props: sidebarProps) {
+function Sidebar(props: SidebarProps) {
   return (
     <div className={clsx("main__sidebar", "sidebar")}>
       <SidebarMenu />
@@ -646,7 +648,7 @@ function SidebarMenu() {
   );
 }
 
-function SidebarList(props: sidebarProps) {
+function SidebarList(props: SidebarProps) {
   if (!props.tracksSelection) {
     const result = [];
     for (let i = 0; i < 3; i++) {
@@ -714,14 +716,14 @@ function Player(props: PlayerBarProps) {
     return (
     <div className={clsx("bar__player", "player")}>
       <PlayerControls />
-      <TrackOnPlay />
+      <TrackOnPlayPlug />
     </div>
     )
   }
   return (
     <div className={clsx("bar__player", "player")}>
       <PlayerControls />
-      <TrackOnPlay currentTrack={props.currentTrack} />
+      <TrackOnPlay track={props.currentTrack} />
     </div>
   );
 }
@@ -768,7 +770,7 @@ function PlayerControls() {
   );
 }
 
-function SvgImg(props: svgProps) {
+function SvgImg(props: SVGProps) {
   return (
     <svg
       className={clsx(props.className, "std-svg")}
@@ -779,37 +781,7 @@ function SvgImg(props: svgProps) {
   );
 }
 
-function TrackOnPlay({currentTrack}: PlayerBarProps) {
-  if (!currentTrack) {
-    return (
-      <div className={clsx("player__track-on-play", "track-on-play-plug")}>
-        <div className={clsx("track-on-play__contain", "track-on-play-plug__contain")}>
-          <div className={clsx("track-on-play__image", "track-on-play-plug__image")}>
-          </div>
-          <div className={clsx("track-on-play__name", "track-on-play-plug__name")}>
-          </div>
-          <div className={clsx("track-on-play__author", "track-on-play-plug__author")}>
-          </div>
-        </div>
-  
-        <div className="track-on-play__like-dis">
-          <LikeBtn parentBlockName="track-on-play" />
-  
-          <div
-            className={clsx(
-              "track-on-play__dislike-btn",
-              "dislike-btn",
-              "_btn-icon"
-            )}
-          >
-            <svg className="track-on-play__dislike-svg" aria-label="dislike">
-              <use xlinkHref="img/icon/sprite.svg#icon-dislike"></use>
-            </svg>
-          </div>
-        </div>
-      </div>
-    );
-  }
+function TrackOnPlay(props: TrackOnPlayProps) {
   return (
     <div className={clsx("player__track-on-play", "track-on-play")}>
       <div className="track-on-play__contain">
@@ -817,18 +789,44 @@ function TrackOnPlay({currentTrack}: PlayerBarProps) {
           <SvgImg
             className="track-on-play__svg"
             ariaLabel="music"
-            href={currentTrack.logo || "img/icon/sprite.svg#icon-note"}
+            href={props.track.logo || "img/icon/sprite.svg#icon-note"}
           />
         </div>
         <div className="track-on-play__name">
           <a className="track-on-play__name-link" href="http://">
-            {currentTrack.name}
+            {props.track.name}
           </a>
         </div>
         <div className="track-on-play__author">
           <a className="track-on-play__author-link" href="http://">
-            {currentTrack.author}
+            {props.track.author}
           </a>
+        </div>
+      </div>
+
+      <div className="track-on-play__like-dis">
+        <LikeBtn
+          parentBlockName="track-on-play"
+          onClick={() => {console.log(`track #${props.track.id} was liked`)}}
+        />
+        <DisLikeBtn
+          parentBlockName="track-on-play"
+          onClick={() => {console.log(`track #${props.track.id} was disliked`)}}
+        />
+      </div>
+    </div>
+  );
+}
+
+function TrackOnPlayPlug() {
+  return (
+    <div className={clsx("player__track-on-play", "track-on-play-plug")}>
+      <div className={clsx("track-on-play__contain", "track-on-play-plug__contain")}>
+        <div className={clsx("track-on-play__image", "track-on-play-plug__image")}>
+        </div>
+        <div className={clsx("track-on-play__name", "track-on-play-plug__name")}>
+        </div>
+        <div className={clsx("track-on-play__author", "track-on-play-plug__author")}>
         </div>
       </div>
 
@@ -851,7 +849,7 @@ function TrackOnPlay({currentTrack}: PlayerBarProps) {
   );
 }
 
-function LikeBtn(props: likeBtnProps) {
+function LikeBtn(props: ReactionBtnProps) {
   return (
     <div
       className={clsx(
@@ -859,6 +857,7 @@ function LikeBtn(props: likeBtnProps) {
         "like-btn",
         "_btn-icon"
       )}
+      onClick={props.onClick}
     >
       <SvgImg
         className={clsx(
@@ -868,6 +867,29 @@ function LikeBtn(props: likeBtnProps) {
         )}
         ariaLabel="like"
         href={"img/icon/sprite.svg#icon-like"}
+      />
+    </div>
+  );
+}
+
+function DisLikeBtn(props: ReactionBtnProps) {
+  return (
+    <div
+      className={clsx(
+        props.parentBlockName && props.parentBlockName + "__dislike-btn",
+        "dislike-btn",
+        "_btn-icon"
+      )}
+      onClick={props.onClick}
+    >
+      <SvgImg
+        className={clsx(
+          props.parentBlockName && props.parentBlockName + "__dislike-svg",
+          "dislike-btn__dislike-svg",
+          "dislike-svg"
+        )}
+        ariaLabel="dislike"
+        href={"img/icon/sprite.svg#icon-dislike"}
       />
     </div>
   );
