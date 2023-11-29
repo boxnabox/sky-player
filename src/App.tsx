@@ -35,19 +35,19 @@ const SELECTIONS = [
   {
     name: "today plst",
     href: "https://",
-    imgSrc: "img/playlist01.png",
+    imgSrc: "assets/img/playlist01.png",
     imgAlt: "day's playlist",
   },
   {
     name: "100 hits",
     href: "https://",
-    imgSrc: "img/playlist02.png",
+    imgSrc: "assets/img/playlist02.png",
     imgAlt: "day's playlist",
   },
   {
     name: "indie",
     href: "https://",
-    imgSrc: "img/playlist03.png",
+    imgSrc: "assets/img/playlist03.png",
     imgAlt: "indie boost",
   },
 ];
@@ -192,7 +192,7 @@ function App() {
   useEffect(() => {
     const timerID = setTimeout(() => {
       emulateContentDownload();
-    }, 3000);
+    }, 2000);
 
     return () => {
       clearTimeout(timerID);
@@ -303,7 +303,7 @@ function SearchBar() {
     <div className="centerblock__search">
       <SvgImg
         className="search__svg"
-        href="img/icon/sprite.svg#icon-search"
+        href="assets/img/icon/sprite.svg#icon-search"
         ariaLabel="search"
       />
       <input
@@ -521,7 +521,7 @@ function PlaylistTitle() {
       <div className={clsx("playlist-title__col", "col03")}>АЛЬБОМ</div>
       <div className={clsx("playlist-title__col", "col04")}>
         <svg className="playlist-title__svg" aria-label="time">
-          <use xlinkHref="img/icon/sprite.svg#icon-watch"></use>
+          <use xlinkHref="assets/img/icon/sprite.svg#icon-watch"></use>
         </svg>
       </div>
     </div>
@@ -573,7 +573,7 @@ function Track(props: Track) {
           <svg className="track__title-svg" aria-label="music">
             <use
               xlinkHref={
-                props.logo || "img/icon/sprite.svg#icon-note"
+                props.logo || "assets/img/icon/sprite.svg#icon-note"
               }
             ></use>
           </svg>
@@ -599,7 +599,7 @@ function Track(props: Track) {
         <SvgImg
           className="track__time-svg"
           ariaLabel="like"
-          href={"img/icon/sprite.svg#icon-like"}
+          href={"assets/img/icon/sprite.svg#icon-like"}
         />
         <span className="track__time-text">
           {formatTime(props.duration_in_seconds)}
@@ -735,35 +735,35 @@ function PlayerControls() {
         <SvgImg
           className="player__btn-prev-svg"
           ariaLabel="prev"
-          href="img/icon/sprite.svg#icon-prev"
+          href="assets/img/icon/sprite.svg#icon-prev"
         />
       </div>
       <div className={clsx("player__btn-play", "_btn")}>
         <SvgImg
           className="player__btn-play-svg"
           ariaLabel="play"
-          href="img/icon/sprite.svg#icon-play"
+          href="assets/img/icon/sprite.svg#icon-play"
         />
       </div>
       <div className="player__btn-next">
         <SvgImg
           className="player__btn-next-svg"
           ariaLabel="next"
-          href="img/icon/sprite.svg#icon-next"
+          href="assets/img/icon/sprite.svg#icon-next"
         />
       </div>
       <div className={clsx("player__btn-repeat", "_btn-icon")}>
         <SvgImg
           className="player__btn-repeat-svg"
           ariaLabel="repeat"
-          href="img/icon/sprite.svg#icon-repeat"
+          href="assets/img/icon/sprite.svg#icon-repeat"
         />
       </div>
       <div className={clsx("player__btn-shuffle", "_btn-icon")}>
         <SvgImg
           className="player__btn-shuffle-svg"
           ariaLabel="shuffle"
-          href="img/icon/sprite.svg#icon-shuffle"
+          href="assets/img/icon/sprite.svg#icon-shuffle"
         />
       </div>
     </div>
@@ -789,7 +789,7 @@ function TrackOnPlay(props: TrackOnPlayProps) {
           <SvgImg
             className="track-on-play__svg"
             ariaLabel="music"
-            href={props.track.logo || "img/icon/sprite.svg#icon-note"}
+            href={props.track.logo || "assets/img/icon/sprite.svg#icon-note"}
           />
         </div>
         <div className="track-on-play__name">
@@ -841,7 +841,7 @@ function TrackOnPlayPlug() {
           )}
         >
           <svg className="track-on-play__dislike-svg" aria-label="dislike">
-            <use xlinkHref="img/icon/sprite.svg#icon-dislike"></use>
+            <use xlinkHref="assets/img/icon/sprite.svg#icon-dislike"></use>
           </svg>
         </div>
       </div>
@@ -866,7 +866,7 @@ function LikeBtn(props: ReactionBtnProps) {
           "like-svg"
         )}
         ariaLabel="like"
-        href={"img/icon/sprite.svg#icon-like"}
+        href={"assets/img/icon/sprite.svg#icon-like"}
       />
     </div>
   );
@@ -889,7 +889,7 @@ function DisLikeBtn(props: ReactionBtnProps) {
           "dislike-svg"
         )}
         ariaLabel="dislike"
-        href={"img/icon/sprite.svg#icon-dislike"}
+        href={"assets/img/icon/sprite.svg#icon-dislike"}
       />
     </div>
   );
@@ -901,7 +901,7 @@ function Volume() {
       <div className="volume__content">
         <div className="volume__image">
           <svg className="volume__svg" aria-label="volume">
-            <use xlinkHref="img/icon/sprite.svg#icon-volume"></use>
+            <use xlinkHref="assets/img/icon/sprite.svg#icon-volume"></use>
           </svg>
         </div>
         <div className={clsx("volume__progress", "_btn")}>
