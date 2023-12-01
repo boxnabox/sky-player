@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.scss";
-import tracks from "./tracks";
+import tracks from "./data/tracks";
 import * as PLUG from "./data/plugs"
 import isFilter from "./utils/isFilter";
-import Main from "./pages/Home/Main";
-import Bar from "./pages/Home/Bar";
 import HomePage from "./pages/Home";
 import Login from "./pages/Login";
 
