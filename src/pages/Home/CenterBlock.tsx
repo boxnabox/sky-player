@@ -21,7 +21,7 @@ export default   function CenterBlock(props: MainProps) {
       <div className="centerblock__search">
         <SvgImg
           className="search__svg"
-          href="assets/img/icon/sprite.svg#icon-search"
+          href="img/icon/sprite.svg#icon-search"
           ariaLabel="search"
         />
         <input
@@ -239,7 +239,7 @@ export default   function CenterBlock(props: MainProps) {
         <div className={clsx("playlist-title__col", "col03")}>АЛЬБОМ</div>
         <div className={clsx("playlist-title__col", "col04")}>
           <svg className="playlist-title__svg" aria-label="time">
-            <use xlinkHref="assets/img/icon/sprite.svg#icon-watch"></use>
+            <use xlinkHref="img/icon/sprite.svg#icon-watch"></use>
           </svg>
         </div>
       </div>
@@ -291,7 +291,7 @@ export default   function CenterBlock(props: MainProps) {
             <svg className="track__title-svg" aria-label="music">
               <use
                 xlinkHref={
-                  props.logo || "assets/img/icon/sprite.svg#icon-note"
+                  props.logo || "img/icon/sprite.svg#icon-note"
                 }
               ></use>
             </svg>
@@ -317,7 +317,7 @@ export default   function CenterBlock(props: MainProps) {
           <SvgImg
             className="track__time-svg"
             ariaLabel="like"
-            href={"assets/img/icon/sprite.svg#icon-like"}
+            href={"img/icon/sprite.svg#icon-like"}
           />
           <span className="track__time-text">
             {formatTime(props.duration_in_seconds)}

@@ -45,35 +45,35 @@ export default function Bar(props: PlayerBarProps) {
           <SvgImg
             className="player__btn-prev-svg"
             ariaLabel="prev"
-            href="assets/img/icon/sprite.svg#icon-prev"
+            href="img/icon/sprite.svg#icon-prev"
           />
         </div>
         <div className={clsx("player__btn-play", "_btn")}>
           <SvgImg
             className="player__btn-play-svg"
             ariaLabel="play"
-            href="assets/img/icon/sprite.svg#icon-play"
+            href="img/icon/sprite.svg#icon-play"
           />
         </div>
         <div className="player__btn-next">
           <SvgImg
             className="player__btn-next-svg"
             ariaLabel="next"
-            href="assets/img/icon/sprite.svg#icon-next"
+            href="img/icon/sprite.svg#icon-next"
           />
         </div>
         <div className={clsx("player__btn-repeat", "_btn-icon")}>
           <SvgImg
             className="player__btn-repeat-svg"
             ariaLabel="repeat"
-            href="assets/img/icon/sprite.svg#icon-repeat"
+            href="img/icon/sprite.svg#icon-repeat"
           />
         </div>
         <div className={clsx("player__btn-shuffle", "_btn-icon")}>
           <SvgImg
             className="player__btn-shuffle-svg"
             ariaLabel="shuffle"
-            href="assets/img/icon/sprite.svg#icon-shuffle"
+            href="img/icon/sprite.svg#icon-shuffle"
           />
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function Bar(props: PlayerBarProps) {
             <SvgImg
               className="track-on-play__svg"
               ariaLabel="music"
-              href={props.track.logo || "assets/img/icon/sprite.svg#icon-note"}
+              href={props.track.logo || "img/icon/sprite.svg#icon-note"}
             />
           </div>
           <div className="track-on-play__name">
@@ -140,7 +140,7 @@ export default function Bar(props: PlayerBarProps) {
             )}
           >
             <svg className="track-on-play__dislike-svg" aria-label="dislike">
-              <use xlinkHref="assets/img/icon/sprite.svg#icon-dislike"></use>
+              <use xlinkHref="img/icon/sprite.svg#icon-dislike"></use>
             </svg>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function Bar(props: PlayerBarProps) {
             "like-svg"
           )}
           ariaLabel="like"
-          href={"assets/img/icon/sprite.svg#icon-like"}
+          href={"img/icon/sprite.svg#icon-like"}
         />
       </div>
     );
@@ -188,7 +188,7 @@ export default function Bar(props: PlayerBarProps) {
             "dislike-svg"
           )}
           ariaLabel="dislike"
-          href={"assets/img/icon/sprite.svg#icon-dislike"}
+          href={"img/icon/sprite.svg#icon-dislike"}
         />
       </div>
     );
@@ -200,7 +200,7 @@ export default function Bar(props: PlayerBarProps) {
         <div className="volume__content">
           <div className="volume__image">
             <svg className="volume__svg" aria-label="volume">
-              <use xlinkHref="assets/img/icon/sprite.svg#icon-volume"></use>
+              <use xlinkHref="img/icon/sprite.svg#icon-volume"></use>
             </svg>
           </div>
           <div className={clsx("volume__progress", "_btn")}>
