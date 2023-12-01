@@ -25,19 +25,19 @@ export const SELECTIONS = [
   {
     name: "today plst",
     href: "https://",
-    imgSrc: "assets/img/playlist01.png",
+    imgSrc: "img/playlist01.png",
     imgAlt: "day's playlist",
   },
   {
     name: "100 hits",
     href: "https://",
-    imgSrc: "assets/img/playlist02.png",
+    imgSrc: "img/playlist02.png",
     imgAlt: "day's playlist",
   },
   {
     name: "indie",
     href: "https://",
-    imgSrc: "assets/img/playlist03.png",
+    imgSrc: "img/playlist03.png",
     imgAlt: "indie boost",
   },
 ];
