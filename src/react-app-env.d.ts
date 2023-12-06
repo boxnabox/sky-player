@@ -1,5 +1,6 @@
 type FilterKey = "name" | "author" | "genre" | "album";
 type SortKey = "id" | "release_date" | "duration_in_seconds";
+type TrackKey = FilterKey | SortKey | "logo"| "track_file" | "stared_user";
 type PLModifierElems = (FilterKey | SortKey)[];
 type FilterOptions = {
   [key in FilterKey]?: Set<string>;
@@ -43,6 +44,9 @@ interface NavProps {
 
 interface BurgerProps {
   onClick: () => void;
+}
+interface HomePageProps extends MainProps {
+  currentTrack?: Track;
 }
 
 interface MainProps {
