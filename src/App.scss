@@ -167,6 +167,10 @@ body {
     height: 1px;
     background-color: #d3d3d3;
   }
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .menu {
@@ -206,7 +210,7 @@ body {
     margin-bottom: 45px;
   }
 
-  &__filter {
+  &__pl-modifier {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -250,7 +254,7 @@ body {
   }
 }
 
-.filter {
+.pl-modifier {
   &__title {
     font-style: normal;
     font-weight: 400;
@@ -268,10 +272,69 @@ body {
     border-radius: 60px;
     padding: 6px 20px;
 
-    &:not(:last-child) {
-      margin-right: 10px;
+    // &:not(:last-child) {
+    //   margin-right: 10px;
+    // }
+
+    &_active {
+      border-color: #ad61ff;
+      color: #ad61ff;
+      cursor: pointer;
+    }
+
+    &_active:hover {
+      border-color: #ad61ff;
+      color: #ad61ff;
+      cursor: pointer;
     }
   }
+
+  &__button-wrapper:not(:last-child) {
+    margin-right: 10px;
+  }
+}
+
+.pl-modifier-button__dropdown {
+  width: 288px;
+  max-height: 294px;
+  padding: 34px;
+  border-radius: 12px;
+  background-color: #313131;
+  position: absolute;
+  overflow: hidden;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.dropdown__item {
+  font-size: 20px;
+  line-height: 24px;
+
+  &_checked {
+    font-size: 20px;
+    line-height: 24px;
+    color: #b672ff;
+    text-decoration-line: underline;
+  }
+}
+
+.dropdown__item:hover {
+  color: #d9b6ff;
+  cursor: pointer;
+}
+
+.dropdown__item:active {
+  color: #b672ff;
 }
 
 .content {
@@ -332,7 +395,7 @@ body {
     margin-bottom: 12px;
   }
 
-  &__track {
+  &__track, &__track-plug {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -365,8 +428,6 @@ body {
     fill: transparent;
     stroke: #4e4e4e;
   }
-
-  //&__title-text {}
 
   &__title-link {
     font-style: normal;
@@ -411,8 +472,6 @@ body {
     color: #696969;
   }
 
-  //&__time {}
-
   &__time-svg {
     width: 14px;
     height: 12px;
@@ -428,6 +487,46 @@ body {
     line-height: 24px;
     text-align: right;
     color: #696969;
+  }
+}
+
+.track-plug {
+  &__title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 447px;
+  }
+
+  &__title-image {
+    width: 51px;
+    height: 51px;
+    padding: 16px;
+    margin-right: 17px;
+    background: #313131;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__title-text {
+    width: 329px;
+    height: 19px;
+    flex-shrink: 0;
+    background: #313131;
+  }
+
+  &__author {
+    width: 271px;
+    height: 19px;
+    margin-right: 50px;
+    background: #313131;
+  }
+
+  &__album {
+    width: 305px;
+    height: 19px;
+    background: #313131;
   }
 }
 
@@ -473,6 +572,16 @@ body {
   &__item {
     width: 250px;
     height: 150px;
+
+    &:not(:last-child) {
+      margin-bottom: 30px;
+    }
+  }
+
+  .sidebar-item-plug {
+    width: 250px;
+    height: 150px;
+    background: #313131;
 
     &:not(:last-child) {
       margin-bottom: 30px;
@@ -605,18 +714,18 @@ body {
     stroke: #696969;
   }
 
-  &__track-play {
+  &__track-on-play {
     display: flex;
     flex-direction: row;
   }
 }
 
-.track-play {
+.track-on-play {
   &__contain {
     width: auto;
     display: grid;
     grid-template-columns: auto 1fr;
-    grid-template-areas: "image author" "image album";
+    grid-template-areas: "image album" "image author";
     align-items: center;
   }
 
@@ -640,27 +749,27 @@ body {
 
   &__author {
     grid-area: author;
-    min-width: 49px;
+    width: auto;
   }
 
   &__author-link {
     font-style: normal;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 13px;
     line-height: 24px;
     color: #ffffff;
     white-space: nowrap;
   }
 
-  &__album {
+  &__name {
     grid-area: album;
-    min-width: 49px;
+    width: auto;
   }
 
-  &__album-link {
+  &__name-link {
     font-style: normal;
     font-weight: 400;
-    font-size: 13px;
+    font-size: 16px;
     line-height: 24px;
     color: #ffffff;
   }
@@ -669,7 +778,8 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-left: 26%;
+    gap: 24px;
+    margin-left: 28px;
   }
 
   &__like-btn,
@@ -684,15 +794,28 @@ body {
     stroke: #696969;
   }
 
-  &__dislike-btn {
-    margin-left: 28.5px;
-  }
-
   &__dislike-svg {
     width: 14.34px;
     height: 13px;
     fill: transparent;
     stroke: #696969;
+  }
+}
+
+.track-on-play-plug {
+  display: flex;
+  flex-direction: row;
+
+  &__image {
+    width: 51px;
+    height: 51px;
+    background-color: #313131;
+  }
+
+  &__name, &__author {
+    width: 59px;
+    height: 15px;
+    background-color: #313131;
   }
 }
 
