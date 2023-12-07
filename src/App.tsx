@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 import './App.scss';
+import * as S from './styles';
 import tracks from './data/tracks';
 import * as PLUG from './data/plugs';
 import isFilter from './utils/isFilter';
@@ -142,17 +143,20 @@ export default function App() {
   }, []);
 
   return (
-    <div className="wrapper">
-      {logedIn ? (
-        <HomePage
-          sortedTracks={sortedTracks}
-          plModifierProps={gatherFilterBarProps()}
-          tracksSelection={selections}
-          currentTrack={trackOnPlay}
-        />
-      ) : (
-        <Login />
-      )}
-    </div>
+    <>
+      <S.Global />
+      <S.Wrapper>
+        {logedIn ? (
+          <HomePage
+            sortedTracks={sortedTracks}
+            plModifierProps={gatherFilterBarProps()}
+            tracksSelection={selections}
+            currentTrack={trackOnPlay}
+          />
+        ) : (
+          <Login />
+        )}
+      </S.Wrapper>
+    </>
   );
 }
