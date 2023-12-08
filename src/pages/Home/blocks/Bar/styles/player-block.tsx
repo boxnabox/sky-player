@@ -256,12 +256,14 @@ export const VolumeSVG = styled(SvgImg)`
 
 export const VolumeInputWrapper = styled.div`
   width: 109px;
+  height: 4px;
 `;
 
 export const VolumeInput = styled.input.attrs(() => ({
   type: 'range',
   name: 'volume range',
 }))`
+  display: block;
   width: 109px;
   height: 4px;
   background-color: #d9d9d9;
