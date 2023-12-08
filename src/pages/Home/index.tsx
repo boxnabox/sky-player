@@ -1,15 +1,16 @@
-import Bar from './Bar';
-import Main from './Main';
+import Bar from './blocks/Bar';
+import Main from './blocks/Main';
+import * as S from './styles';
 
 export default function HomePage(props: HomePageProps) {
   return (
-    <div className="container">
+    <S.Container>
       <Main
         sortedTracks={props.sortedTracks}
         plModifierProps={props.plModifierProps}
         tracksSelection={props.tracksSelection}
       />
       <Bar currentTrack={props.currentTrack} />
-    </div>
+    </S.Container>
   );
 }

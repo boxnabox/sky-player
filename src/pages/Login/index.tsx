@@ -1,3 +1,9 @@
+import * as S from './styles';
+
 export default function Login() {
-  return <div className="login">there would be login page</div>;
+  return (
+    <S.Container>
+      <div className="login">there would be login page</div>
+    </S.Container>
+  );
 }

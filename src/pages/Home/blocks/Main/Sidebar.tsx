@@ -1,22 +1,22 @@
-import clsx from 'clsx';
+import * as S from './styles/sidebar';
 
 export default function Sidebar(props: SidebarProps) {
   return (
-    <div className={clsx('main__sidebar', 'sidebar')}>
+    <S.Sidebar>
       <SidebarMenu />
-      <div className="sidebar__block">
+      <S.SBBlock>
         <SidebarList tracksSelection={props.tracksSelection} />
-      </div>
-    </div>
+      </S.SBBlock>
+    </S.Sidebar>
   );
 }
 
 function SidebarMenu() {
   return (
-    <div className={clsx('sidebar__personal', 'sidebar-menu')}>
-      <p className="sidebar__personal-name">Sergey.Popov</p>
-      <div className="sidebar__avatar"></div>
-    </div>
+    <S.SBMenu>
+      <S.SBUserName>Sergey.Popov</S.SBUserName>
+      <S.SBUserAvatar></S.SBUserAvatar>
+    </S.SBMenu>
   );
 }
 
@@ -30,28 +30,24 @@ function SidebarList(props: SidebarProps) {
   }
 
   return (
-    <div className="sidebar__list">
+    <S.SBList>
       {props.tracksSelection.map((selection) => {
         return <SidebarItem {...selection} key={selection.name} />;
       })}
-    </div>
+    </S.SBList>
   );
 }
 
 function SidebarItem(props: TracksSelection) {
   return (
-    <div className="sidebar__item">
-      <a className="sidebar__link" href={props.href}>
-        <img
-          className="sidebar__img"
-          src={props.imgSrc}
-          aria-label={props.imgAlt}
-        />
-      </a>
-    </div>
+    <S.SBItem>
+      <S.SBItemLink href={props.href}>
+        <S.SBItemImg src={props.imgSrc} aria-label={props.imgAlt} />
+      </S.SBItemLink>
+    </S.SBItem>
   );
 }
 
 function SidebarItemPlug() {
-  return <div className="sidebar__item sidebar-item-plug"></div>;
+  return <S.SBItem $isPlug={true}></S.SBItem>;
 }

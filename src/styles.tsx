@@ -37,9 +37,21 @@ export const Global = createGlobalStyle`
     cursor: pointer;
   }
 
+  select,
   button,
-  ._btn {
-    cursor: pointer;
+  input {
+    --webkit-appearance: none;
+    --moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: inherit;
+    line-height: inherit;
+    outline: none;
+    border: none;
   }
 
   ul li {

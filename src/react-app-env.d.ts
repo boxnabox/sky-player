@@ -1,15 +1,15 @@
-type FilterKey = "name" | "author" | "genre" | "album";
-type SortKey = "id" | "release_date" | "duration_in_seconds";
-type TrackKey = FilterKey | SortKey | "logo"| "track_file" | "stared_user";
+type FilterKey = 'name' | 'author' | 'genre' | 'album';
+type SortKey = 'id' | 'release_date' | 'duration_in_seconds';
+type TrackKey = FilterKey | SortKey | 'logo' | 'track_file' | 'stared_user';
 type PLModifierElems = (FilterKey | SortKey)[];
 type FilterOptions = {
   [key in FilterKey]?: Set<string>;
 };
-type SortOptions = "descending" | "ascending";
+type SortOptions = 'descending' | 'ascending';
 
 type SortState = {
-  field: SortKey
-  option: SortOptions
+  field: SortKey;
+  option: SortOptions;
 };
 
 interface Track {
@@ -52,7 +52,7 @@ interface HomePageProps extends MainProps {
 interface MainProps {
   sortedTracks?: Track[];
   plModifierProps: PLModifierProps;
-  tracksSelection?: TracksSelection[]
+  tracksSelection?: TracksSelection[];
 }
 
 interface PLModifierProps {
@@ -67,7 +67,7 @@ interface PLModifierProps {
 }
 
 interface SidebarProps {
-  tracksSelection?: TracksSelection[]
+  tracksSelection?: TracksSelection[];
 }
 
 interface FilterButtonProps extends FilterBtnDropdownProps {
