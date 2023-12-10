@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import * as S from './styles/center-block';
 
 import isFilter from '../../../../utils/isFilter';
 import formatTime from '../../../../utils/formatTime';
+import ScrollBar from '../../../../components/ScrollBar';
 
 export default function CenterBlock(props: MainProps) {
   return (
@@ -117,6 +118,26 @@ function PLModifierBar(props: PLModifierProps) {
   );
 }
 
+// function FilterButtonDropdown(props: FilterBtnDropdownProps) {
+//   return (
+//     <S.PLModDropdown>
+//       {Array.from(props.options).map((option) => {
+//         return (
+//           <S.DropdownItem
+//             $isChecked={props.checkedOptions?.has(option)}
+//             onClick={() => {
+//               props.onDropDownClick(props.filterName, option);
+//             }}
+//             key={option}
+//           >
+//             {option}
+//           </S.DropdownItem>
+//         );
+//       })}
+//     </S.PLModDropdown>
+//   );
+// }
+
 function FilterButton(props: FilterButtonProps) {
   return (
     <S.PLModBarWrapper>
@@ -127,21 +148,50 @@ function FilterButton(props: FilterButtonProps) {
       >
         {props.ruText}
       </S.PLModButton>
-      {props.isOpened && (
-        <FilterButtonDropdown
-          filterName={props.filterName}
-          options={props.options}
-          checkedOptions={props.checkedOptions}
-          onDropDownClick={props.onDropDownClick}
-        />
-      )}
+      {props.isOpened && <FilterButtonDropdown {...props} />}
     </S.PLModBarWrapper>
   );
 }
 
 function FilterButtonDropdown(props: FilterBtnDropdownProps) {
+  const [isScrollable, setScrollable] = useState<boolean>();
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    console.log('====================');
+    console.log('mounted: wrapper; ' + 'wrapper state: ' + progress);
+  });
+
   return (
-    <S.PLModDropdown>
+    <S.ScrollWrapper>
+      <FiltersList
+        onScroll={setProgress}
+        lengthHandler={setScrollable}
+        {...props}
+      />
+      {isScrollable && <ScrollBar coef={progress} onSliderMove={setProgress} />}
+    </S.ScrollWrapper>
+  );
+}
+
+function FiltersList(props: FilterOptionsList) {
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    console.log('mounted: list');
+    const listNode: HTMLUListElement = listRef.current as HTMLUListElement;
+    props.lengthHandler(listNode.scrollHeight > listNode.clientHeight);
+
+    listNode.addEventListener('scroll', (e: Event) => {
+      const target: HTMLUListElement = e.target as HTMLUListElement;
+      props.onScroll(
+        target.scrollTop / (target.scrollHeight - target.clientHeight),
+      );
+    });
+  });
+
+  return (
+    <S.DropdownList ref={listRef}>
       {Array.from(props.options).map((option) => {
         return (
           <S.DropdownItem
@@ -155,9 +205,31 @@ function FilterButtonDropdown(props: FilterBtnDropdownProps) {
           </S.DropdownItem>
         );
       })}
-    </S.PLModDropdown>
+    </S.DropdownList>
   );
 }
+
+// function SortButton(props: SortButtonProps) {
+//   return (
+//     <S.PLModBarWrapper>
+//       <S.PLModButton
+//         type={'button'}
+//         $isOpened={props.isOpened}
+//         onClick={props.onBtnClick}
+//       >
+//         {props.ruText}
+//       </S.PLModButton>
+//       {props.isOpened && (
+//         <SortButtonDropdown
+//           sortName={props.sortName}
+//           options={props.options}
+//           checkedOption={props.checkedOption}
+//           onDropDownClick={props.onDropDownClick}
+//         />
+//       )}
+//     </S.PLModBarWrapper>
+//   );
+// }
 
 function SortButton(props: SortButtonProps) {
   return (
@@ -169,21 +241,22 @@ function SortButton(props: SortButtonProps) {
       >
         {props.ruText}
       </S.PLModButton>
-      {props.isOpened && (
-        <SortButtonDropdown
-          sortName={props.sortName}
-          options={props.options}
-          checkedOption={props.checkedOption}
-          onDropDownClick={props.onDropDownClick}
-        />
-      )}
+      {props.isOpened && <SortButtonDropdown {...props} />}
     </S.PLModBarWrapper>
   );
 }
 
-function SortButtonDropdown(props: SortBtnDropdownProps) {
+function SortButtonDropdown(props: SortButtonProps) {
   return (
-    <S.PLModDropdown>
+    <S.ScrollWrapper>
+      <SortOptionsList {...props} />
+    </S.ScrollWrapper>
+  );
+}
+
+function SortOptionsList(props: SortBtnDropdownProps) {
+  return (
+    <S.DropdownList>
       {Object.keys(props.options).map((option) => {
         return (
           <S.DropdownItem
@@ -197,7 +270,7 @@ function SortButtonDropdown(props: SortBtnDropdownProps) {
           </S.DropdownItem>
         );
       })}
-    </S.PLModDropdown>
+    </S.DropdownList>
   );
 }
 

@@ -11,7 +11,7 @@ import Login from './pages/Login';
 export default function App() {
   const [logedIn, setLogedIn] = useState(true);
   const [tracksPool, setTracksPool] = useState<Track[] | undefined>(); // getting data every time we choose playlist|log-in
-  const [filterState, setCheckedFilters] = useState<FilterOptions>();
+  const [filterState, setfilterState] = useState<FilterOptions>();
   const [sortState, setSortOption] = useState<SortState>();
   const [currnetTracksQueue, setCurrentTracksQueue] =
     useState<typeof tracksPool>(); // getting tracks from sortedTracks after track was clicked; It is to keep tracks order when we browse other playlists
@@ -67,7 +67,7 @@ export default function App() {
 
       Object.keys(duplicateFilters).length || (duplicateFilters = undefined);
 
-      setCheckedFilters(duplicateFilters);
+      setfilterState(duplicateFilters);
       return;
     }
 
@@ -78,7 +78,7 @@ export default function App() {
       filterOption,
     );
 
-    setCheckedFilters(duplicateFilters);
+    setfilterState(duplicateFilters);
   };
 
   const handleSortChange = (sortrKey: SortKey, sortOption: SortOptions) => {
@@ -135,7 +135,7 @@ export default function App() {
   useEffect(() => {
     const timerID = setTimeout(() => {
       emulateContentDownload();
-    }, 2000);
+    }, 500);
 
     return () => {
       clearTimeout(timerID);

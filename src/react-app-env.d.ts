@@ -83,6 +83,11 @@ interface FilterBtnDropdownProps {
   onDropDownClick: (filterName: FilterKey, filterOption: string) => void;
 }
 
+interface FilterOptionsList extends FilterBtnDropdownProps {
+  onScroll: (progress: number) => void;
+  lengthHandler: (isLong: boolean) => void;
+}
+
 interface SortButtonProps extends SortBtnDropdownProps {
   ruText: string;
   isOpened: boolean;

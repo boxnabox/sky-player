@@ -142,31 +142,70 @@ export const PLModButton = styled.button<{ $isOpened?: boolean }>`
   }}
 `;
 
-export const PLModDropdown = styled.ul`
-  width: 288px;
-  max-height: 294px;
+// export const PLModDropdown = styled.ul`
+//   width: 288px;
+//   max-height: 294px;
+//   padding: 34px;
+//   margin-top: 10px;
+//   border-radius: 12px;
+//   background-color: #313131;
+
+//   display: flex;
+//   flex-direction: column;
+//   align-items: flex-start;
+//   gap: 28px;
+
+//   position: absolute;
+//   overflow: hidden;
+//   overflow-y: scroll;
+
+//   -ms-overflow-style: none; /* IE and Edge */
+//   scrollbar-width: none; /* Firefox */
+//   &::-webkit-scrollbar {
+//     display: none;
+//   }
+// `;
+
+export const ScrollWrapper = styled.div`
+  width: 248px;
+  max-height: 305px;
+  margin-top: 10px;
   padding: 34px;
+  position: absolute;
+
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+
   border-radius: 12px;
   background-color: #313131;
-  position: absolute;
-  overflow: hidden;
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 28px;
-  overflow-y: scroll;
+`;
+
+export const DropdownList = styled.ul`
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-
   &::-webkit-scrollbar {
     display: none;
   }
+
+  box-sizing: border-box;
+  padding-right: 12px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  flex-grow: 1;
 `;
 
 export const DropdownItem = styled.li<{ $isChecked?: boolean }>`
+  display: block;
   font-size: 20px;
-  line-height: 24px;
+  line-height: 25px;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+
+  &:not(:last-child) {
+    margin-bottom: 28px;
+  }
 
   &:active {
     color: #b672ff;
