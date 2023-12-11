@@ -27,7 +27,7 @@ function SearchBar() {
 }
 
 function PLModifierBar(props: PLModifierProps) {
-  const [expandedFilter, setExpandedFilter] = useState<string | undefined>();
+  const [expandedFilter, setExpandedFilter] = useState<FilterKey | SortKey>();
 
   const allElementsMissings = {
     name: {
@@ -65,16 +65,17 @@ function PLModifierBar(props: PLModifierProps) {
     },
   };
 
-  const handleButtonClick = (filterName: string) => {
-    expandedFilter === filterName
+  const handleButtonClick = (buttonName: FilterKey | SortKey) => {
+    expandedFilter === buttonName
       ? setExpandedFilter(undefined)
-      : setExpandedFilter(filterName);
+      : setExpandedFilter(buttonName);
   };
 
   const content = props.modifierElems.map((name) => {
     if (isFilter(name)) {
       return (
         <FilterButton
+          key={name}
           filterName={name}
           ruText={allElementsMissings[name].ruText}
           isOpened={expandedFilter === name}
@@ -89,7 +90,6 @@ function PLModifierBar(props: PLModifierProps) {
             handleButtonClick(name);
           }}
           onDropDownClick={props.onFilterChange}
-          key={name}
         />
       );
     }
@@ -128,17 +128,36 @@ function FilterButton(props: FilterButtonProps) {
       >
         {props.ruText}
       </S.PLModButton>
-      {props.isOpened && <FilterButtonDropdown {...props} />}
+      {props.checkedOptions && <BTNCounter count={props.checkedOptions.size} />}
+      {props.isOpened && (
+        <FilterButtonDropdown {...props} onOutClick={props.onBtnClick} />
+      )}
     </S.PLModBarWrapper>
   );
 }
 
-function FilterButtonDropdown(props: FilterBtnDropdownProps) {
+function BTNCounter({ count }: { count: number }) {
+  return <S.PLModButtonCounter>{count}</S.PLModButtonCounter>;
+}
+
+function FilterButtonDropdown(props: FilterDropdownProps) {
   const [isScrollable, setScrollable] = useState<boolean>();
   const [progress, setProgress] = useState(0);
 
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const WrapperNode = wrapperRef.current as HTMLDivElement;
+
+    window.addEventListener('click', (e) => {
+      console.log(WrapperNode.contains(e.target as Node));
+      // WrapperNode.contains(e.target as Node) ||
+      //   props.onOutClick(props.filterName);
+    });
+  });
+
   return (
-    <S.ScrollWrapper>
+    <S.ScrollWrapper ref={wrapperRef}>
       <FiltersList
         onScroll={setProgress}
         lengthHandler={setScrollable}

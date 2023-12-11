@@ -70,20 +70,24 @@ interface SidebarProps {
   tracksSelection?: TracksSelection[];
 }
 
-interface FilterButtonProps extends FilterBtnDropdownProps {
-  ruText: string;
-  isOpened: boolean;
-  onBtnClick: () => void;
-}
-
-interface FilterBtnDropdownProps {
+interface CommonFilterProps {
   filterName: FilterKey;
   options: Set<string>;
   checkedOptions?: Set<string>;
   onDropDownClick: (filterName: FilterKey, filterOption: string) => void;
 }
 
-interface FilterOptionsList extends FilterBtnDropdownProps {
+interface FilterButtonProps extends CommonFilterProps {
+  ruText: string;
+  isOpened: boolean;
+  onBtnClick: () => void;
+}
+
+interface FilterDropdownProps extends CommonFilterProps {
+  onOutClick: (filterName?: FilterKey) => void;
+}
+
+interface FilterOptionsList extends CommonFilterProps {
   onScroll: (progress: number) => void;
   lengthHandler: (isLong: boolean) => void;
 }
