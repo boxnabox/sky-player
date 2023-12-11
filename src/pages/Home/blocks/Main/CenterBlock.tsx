@@ -118,26 +118,6 @@ function PLModifierBar(props: PLModifierProps) {
   );
 }
 
-// function FilterButtonDropdown(props: FilterBtnDropdownProps) {
-//   return (
-//     <S.PLModDropdown>
-//       {Array.from(props.options).map((option) => {
-//         return (
-//           <S.DropdownItem
-//             $isChecked={props.checkedOptions?.has(option)}
-//             onClick={() => {
-//               props.onDropDownClick(props.filterName, option);
-//             }}
-//             key={option}
-//           >
-//             {option}
-//           </S.DropdownItem>
-//         );
-//       })}
-//     </S.PLModDropdown>
-//   );
-// }
-
 function FilterButton(props: FilterButtonProps) {
   return (
     <S.PLModBarWrapper>
@@ -157,11 +137,6 @@ function FilterButtonDropdown(props: FilterBtnDropdownProps) {
   const [isScrollable, setScrollable] = useState<boolean>();
   const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
-    console.log('====================');
-    console.log('mounted: wrapper; ' + 'wrapper state: ' + progress);
-  });
-
   return (
     <S.ScrollWrapper>
       <FiltersList
@@ -169,7 +144,9 @@ function FilterButtonDropdown(props: FilterBtnDropdownProps) {
         lengthHandler={setScrollable}
         {...props}
       />
-      {isScrollable && <ScrollBar coef={progress} onSliderMove={setProgress} />}
+      {isScrollable && (
+        <ScrollBar progress={progress} onSliderMove={setProgress} />
+      )}
     </S.ScrollWrapper>
   );
 }
@@ -178,7 +155,6 @@ function FiltersList(props: FilterOptionsList) {
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
-    console.log('mounted: list');
     const listNode: HTMLUListElement = listRef.current as HTMLUListElement;
     props.lengthHandler(listNode.scrollHeight > listNode.clientHeight);
 
@@ -208,28 +184,6 @@ function FiltersList(props: FilterOptionsList) {
     </S.DropdownList>
   );
 }
-
-// function SortButton(props: SortButtonProps) {
-//   return (
-//     <S.PLModBarWrapper>
-//       <S.PLModButton
-//         type={'button'}
-//         $isOpened={props.isOpened}
-//         onClick={props.onBtnClick}
-//       >
-//         {props.ruText}
-//       </S.PLModButton>
-//       {props.isOpened && (
-//         <SortButtonDropdown
-//           sortName={props.sortName}
-//           options={props.options}
-//           checkedOption={props.checkedOption}
-//           onDropDownClick={props.onDropDownClick}
-//         />
-//       )}
-//     </S.PLModBarWrapper>
-//   );
-// }
 
 function SortButton(props: SortButtonProps) {
   return (
