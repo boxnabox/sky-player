@@ -105,6 +105,29 @@ const btnActiveMixin = css`
   color: #ad61ff;
 
   &:hover {
+    border-color: #d9b6ff;
+    color: #d9b6ff;
+    cursor: pointer;
+  }
+
+  &:active {
+    border-color: #ad61ff;
+    color: #ad61ff;
+    cursor: pointer;
+  }
+`;
+
+const btnRegularMixin = css`
+  border: 1px solid #ffffff;
+  color: #ffffff;
+
+  &:hover {
+    border-color: #d9b6ff;
+    color: #d9b6ff;
+    cursor: pointer;
+  }
+
+  &:active {
     border-color: #ad61ff;
     color: #ad61ff;
     cursor: pointer;
@@ -127,18 +150,7 @@ export const PLModButton = styled.button<{ $isOpened?: boolean }>`
   }
 
   ${(props) => {
-    return props.$isOpened
-      ? btnActiveMixin
-      : css`
-          border: 1px solid #ffffff;
-          color: #ffffff;
-
-          &:hover {
-            border-color: #d9b6ff;
-            color: #d9b6ff;
-            cursor: pointer;
-          }
-        `;
+    return props.$isOpened ? btnActiveMixin : btnRegularMixin;
   }}
 `;
 
@@ -207,27 +219,25 @@ export const DropdownItem = styled.li<{ $isChecked?: boolean }>`
     margin-bottom: 28px;
   }
 
-  &:active {
-    color: #b672ff;
+  &:hover {
+    color: #d9b6ff;
     cursor: pointer;
   }
 
   ${(props) => {
     return props.$isChecked
       ? css`
-          color: #b672ff;
+          color: #ad61ff;
           text-decoration-line: underline;
-
-          &:hover {
-            color: #b672ff;
+          &:active {
+            color: #ad61ff;
             cursor: pointer;
           }
         `
       : css`
           color: #ffffff;
-
-          &:hover {
-            color: #b672ff;
+          &:active {
+            color: #ad61ff;
             cursor: pointer;
           }
         `;
