@@ -21,7 +21,7 @@ function ScrollBar(props: SBProps) {
     sliderNode.style.top = props.progress
       ? props.progress * (barNode.clientHeight - sliderNode.clientHeight) + 'px'
       : '0px';
-  });
+  }, []);
 
   // Inner slider drag reaction: 2023-12-11 - it doesn't work :(
   // useEffect(() => {

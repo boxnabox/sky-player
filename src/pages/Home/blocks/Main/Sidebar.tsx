@@ -1,4 +1,4 @@
-import * as S from './styles/sidebar';
+import * as S from './sidebar.style';
 
 export default function Sidebar(props: SidebarProps) {
   return (

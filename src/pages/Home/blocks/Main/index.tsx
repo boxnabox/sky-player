@@ -1,5 +1,5 @@
 import * as PLUG from '../../../../data/plugs';
-import * as S from './styles';
+import * as S from './index.style';
 import Navigation from './Navigation';
 import CenterBlock from './CenterBlock';
 import Sidebar from './Sidebar';

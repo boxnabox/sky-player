@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import SvgImg from '../../../../../components/SvgImg';
+import SvgImg from '../../../../components/SvgImg';
 
 export const PlayerBlock = styled.div`
   height: 73px;

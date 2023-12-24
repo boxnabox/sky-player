@@ -1,4 +1,4 @@
-import * as S from './styles/player-block';
+import * as S from './player-block.style';
 
 export default function PlayerBlock(props: PlayerBarProps) {
   return (

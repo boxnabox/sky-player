@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-import SvgImg from '../../../../../components/SvgImg';
+import SvgImg from '../../../../components/SvgImg';
 
 // SVGs_______________________________
 export const SearchSVG = styled(SvgImg)`

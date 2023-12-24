@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import * as S from './styles/navigation';
+import * as S from './navigation.style';
 
 export default function Navigation(props: NavProps) {
   const [isExpanded, setMenuVisibility] = useState(props.isExpanded);

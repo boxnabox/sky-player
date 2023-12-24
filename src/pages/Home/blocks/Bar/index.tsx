@@ -1,4 +1,4 @@
-import * as S from './styles';
+import * as S from './index.style';
 
 import ProgressBar from './ProgressBar';
 import PlayerBlock from './PlayerBlock';

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import * as S from './styles/center-block';
+import * as S from './center-block.style';
 
 import isFilter from '../../../../utils/isFilter';
 import formatTime from '../../../../utils/formatTime';
@@ -173,12 +173,18 @@ function FiltersList(props: FilterOptionsList) {
     const listNode: HTMLUListElement = listRef.current as HTMLUListElement;
     props.lengthHandler(listNode.scrollHeight > listNode.clientHeight);
 
-    listNode.addEventListener('scroll', (e: Event) => {
+    function handleScroll(e: Event) {
       const target: HTMLUListElement = e.target as HTMLUListElement;
       props.onScroll(
         target.scrollTop / (target.scrollHeight - target.clientHeight),
       );
-    });
+    }
+
+    listNode.addEventListener('scroll', handleScroll);
+
+    return () => {
+      listNode.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return (
