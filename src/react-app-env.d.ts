@@ -1,15 +1,15 @@
-type FilterKey = "name" | "author" | "genre" | "album";
-type SortKey = "id" | "release_date" | "duration_in_seconds";
-type TrackKey = FilterKey | SortKey | "logo"| "track_file" | "stared_user";
+type FilterKey = 'name' | 'author' | 'genre' | 'album';
+type SortKey = 'id' | 'release_date' | 'duration_in_seconds';
+type TrackKey = FilterKey | SortKey | 'logo' | 'track_file' | 'stared_user';
 type PLModifierElems = (FilterKey | SortKey)[];
 type FilterOptions = {
   [key in FilterKey]?: Set<string>;
 };
-type SortOptions = "descending" | "ascending";
+type SortOptions = 'descending' | 'ascending';
 
 type SortState = {
-  field: SortKey
-  option: SortOptions
+  field: SortKey;
+  option: SortOptions;
 };
 
 interface Track {
@@ -52,7 +52,7 @@ interface HomePageProps extends MainProps {
 interface MainProps {
   sortedTracks?: Track[];
   plModifierProps: PLModifierProps;
-  tracksSelection?: TracksSelection[]
+  tracksSelection?: TracksSelection[];
 }
 
 interface PLModifierProps {
@@ -61,42 +61,50 @@ interface PLModifierProps {
     [key: FilterKey]: Set<string>;
   };
   filterState?: FilterOptions;
-  checkedSorting?: SortState;
+  sortState?: SortState;
   onFilterChange: (filterName: FilterKey, filterOption: string) => void;
   onSortChange: (sortName: SortKey, filterOption: SortOptions) => void;
 }
 
 interface SidebarProps {
-  tracksSelection?: TracksSelection[]
+  tracksSelection?: TracksSelection[];
 }
 
-interface FilterButtonProps extends FilterBtnDropdownProps {
-  ruText: string;
-  isOpened: boolean;
-  onBtnClick: () => void;
-}
-
-interface FilterBtnDropdownProps {
+interface CommonFilterProps {
   filterName: FilterKey;
   options: Set<string>;
   checkedOptions?: Set<string>;
   onDropDownClick: (filterName: FilterKey, filterOption: string) => void;
 }
 
-interface SortButtonProps extends SortBtnDropdownProps {
+interface FilterButtonProps extends CommonFilterProps {
   ruText: string;
-  isOpened: boolean;
-  onBtnClick: () => void;
 }
 
-interface SortBtnDropdownProps {
+interface FilterDropdownProps extends CommonFilterProps {
+  onOutClick: (filterName?: FilterKey) => void;
+}
+
+interface FilterOptionsList extends CommonFilterProps {
+  onScroll: (progress: number) => void;
+  lengthHandler: (isLong: boolean) => void;
+}
+
+interface CommonSortProps {
   sortName: SortKey;
   options: {
-    descending: string;
-    ascending: string;
+    [key: SortOptions]: string;
   };
   checkedOption?: SortOptions;
   onDropDownClick: (sortName: SortKey, sortOption: SortOptions) => void;
+}
+
+interface SortButtonProps extends CommonSortProps {
+  ruText: string;
+}
+
+interface SortBtnDropdownProps extends CommonSortProps {
+  onOutClick: (sortName?: SortKey) => void;
 }
 
 interface PLProps {

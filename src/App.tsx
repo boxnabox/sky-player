@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 import './App.scss';
+import * as S from './styles';
 import tracks from './data/tracks';
 import * as PLUG from './data/plugs';
 import isFilter from './utils/isFilter';
-import HomePage from './pages/Home';
-import Login from './pages/Login';
+import HomePage from './pages/home';
+import Login from './pages/login';
 
 export default function App() {
   const [logedIn, setLogedIn] = useState(true);
   const [tracksPool, setTracksPool] = useState<Track[] | undefined>(); // getting data every time we choose playlist|log-in
-  const [filterState, setCheckedFilters] = useState<FilterOptions>();
+  const [filterState, setfilterState] = useState<FilterOptions>();
   const [sortState, setSortOption] = useState<SortState>();
   const [currnetTracksQueue, setCurrentTracksQueue] =
     useState<typeof tracksPool>(); // getting tracks from sortedTracks after track was clicked; It is to keep tracks order when we browse other playlists
@@ -66,7 +67,7 @@ export default function App() {
 
       Object.keys(duplicateFilters).length || (duplicateFilters = undefined);
 
-      setCheckedFilters(duplicateFilters);
+      setfilterState(duplicateFilters);
       return;
     }
 
@@ -77,7 +78,7 @@ export default function App() {
       filterOption,
     );
 
-    setCheckedFilters(duplicateFilters);
+    setfilterState(duplicateFilters);
   };
 
   const handleSortChange = (sortrKey: SortKey, sortOption: SortOptions) => {
@@ -124,7 +125,7 @@ export default function App() {
       modifierElems: PLUG.PL_MODIFIER_BAR_ELEMENTS,
       filterOptions: filterOptions,
       filterState: filterState,
-      checkedSorting: sortState,
+      sortState: sortState,
       onFilterChange: handleFilterChange,
       onSortChange: handleSortChange,
     };
@@ -134,7 +135,7 @@ export default function App() {
   useEffect(() => {
     const timerID = setTimeout(() => {
       emulateContentDownload();
-    }, 2000);
+    }, 500);
 
     return () => {
       clearTimeout(timerID);
@@ -142,17 +143,20 @@ export default function App() {
   }, []);
 
   return (
-    <div className="wrapper">
-      {logedIn ? (
-        <HomePage
-          sortedTracks={sortedTracks}
-          plModifierProps={gatherFilterBarProps()}
-          tracksSelection={selections}
-          currentTrack={trackOnPlay}
-        />
-      ) : (
-        <Login />
-      )}
-    </div>
+    <>
+      <S.Global />
+      <S.Wrapper>
+        {logedIn ? (
+          <HomePage
+            sortedTracks={sortedTracks}
+            plModifierProps={gatherFilterBarProps()}
+            tracksSelection={selections}
+            currentTrack={trackOnPlay}
+          />
+        ) : (
+          <Login />
+        )}
+      </S.Wrapper>
+    </>
   );
 }
