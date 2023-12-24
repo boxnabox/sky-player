@@ -46,4 +46,11 @@
         <path d="M19.5 3L14.5 5.88675V0.113249L19.5 3ZM10.1632 5.91673L9.70863 5.7084L10.1632 5.91673ZM7.33683 12.0833L6.8823 11.8749L7.33683 12.0833ZM0.5 14.5H2.79151V15.5H0.5V14.5ZM6.8823 11.8749L9.70863 5.7084L10.6177 6.12505L7.79137 12.2916L6.8823 11.8749ZM14.7085 2.5H15V3.5H14.7085V2.5ZM9.70863 5.7084C10.6047 3.75341 12.5579 2.5 14.7085 2.5V3.5C12.949 3.5 11.3508 4.52552 10.6177 6.12505L9.70863 5.7084ZM2.79151 14.5C4.55105 14.5 6.14918 13.4745 6.8823 11.8749L7.79137 12.2916C6.89533 14.2466 4.94205 15.5 2.79151 15.5V14.5Z"/>
     </symbol>
     <symbol ></symbol>
+    <symbol id="icon-radio-on" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="9" cy="9" r="8.5" fill="transparent" stroke="white"/>
+        <circle cx="9" cy="9" r="5.4" fill="white"/>
+    </symbol>
+    <symbol id="icon-radio-off" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="9" cy="9" r="8.5" fill="transparent" stroke="white"/>
+    </symbol>
 </svg>

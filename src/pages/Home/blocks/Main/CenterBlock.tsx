@@ -27,9 +27,7 @@ function SearchBar() {
 }
 
 function PLModifierBar(props: PLModifierProps) {
-  const [expandedFilter, setExpandedFilter] = useState<FilterKey | SortKey>();
-
-  const allElementsMissings = {
+  const MODES_FILLER = {
     name: {
       ruText: 'треку',
     },
@@ -65,20 +63,13 @@ function PLModifierBar(props: PLModifierProps) {
     },
   };
 
-  const handleButtonClick = (buttonName: FilterKey | SortKey) => {
-    expandedFilter === buttonName
-      ? setExpandedFilter(undefined)
-      : setExpandedFilter(buttonName);
-  };
-
   const content = props.modifierElems.map((name) => {
     if (isFilter(name)) {
       return (
         <FilterButton
           key={name}
           filterName={name}
-          ruText={allElementsMissings[name].ruText}
-          isOpened={expandedFilter === name}
+          ruText={MODES_FILLER[name].ruText}
           options={
             props.filterOptions[name as keyof typeof props.filterOptions]
           }
@@ -86,9 +77,6 @@ function PLModifierBar(props: PLModifierProps) {
             props.filterState &&
             props.filterState[name as keyof typeof props.filterState]
           }
-          onBtnClick={() => {
-            handleButtonClick(name);
-          }}
           onDropDownClick={props.onFilterChange}
         />
       );
@@ -97,13 +85,9 @@ function PLModifierBar(props: PLModifierProps) {
     return (
       <SortButton
         sortName={name}
-        ruText={allElementsMissings[name].ruText}
-        isOpened={expandedFilter === name}
-        options={allElementsMissings[name].options}
-        checkedOption={props.checkedSorting?.option}
-        onBtnClick={() => {
-          handleButtonClick(name);
-        }}
+        ruText={MODES_FILLER[name].ruText}
+        options={MODES_FILLER[name].options}
+        checkedOption={props.sortState?.option}
         onDropDownClick={props.onSortChange}
         key={name}
       />
@@ -119,25 +103,27 @@ function PLModifierBar(props: PLModifierProps) {
 }
 
 function FilterButton(props: FilterButtonProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  function toggleBtnExpansion() {
+    setIsExpanded(!isExpanded);
+  }
+
   return (
     <S.PLModBarWrapper>
       <S.PLModButton
         type={'button'}
-        $isOpened={props.isOpened}
-        onClick={props.onBtnClick}
+        $isOpened={isExpanded}
+        onClick={toggleBtnExpansion}
       >
         {props.ruText}
       </S.PLModButton>
       {props.checkedOptions && <BTNCounter count={props.checkedOptions.size} />}
-      {props.isOpened && (
-        <FilterButtonDropdown {...props} onOutClick={props.onBtnClick} />
+      {isExpanded && (
+        <FilterButtonDropdown {...props} onOutClick={toggleBtnExpansion} />
       )}
     </S.PLModBarWrapper>
   );
-}
-
-function BTNCounter({ count }: { count: number }) {
-  return <S.PLModButtonCounter>{count}</S.PLModButtonCounter>;
 }
 
 function FilterButtonDropdown(props: FilterDropdownProps) {
@@ -149,12 +135,22 @@ function FilterButtonDropdown(props: FilterDropdownProps) {
   useEffect(() => {
     const WrapperNode = wrapperRef.current as HTMLDivElement;
 
-    window.addEventListener('click', (e) => {
-      console.log(WrapperNode.contains(e.target as Node));
-      // WrapperNode.contains(e.target as Node) ||
-      //   props.onOutClick(props.filterName);
-    });
-  });
+    function onWindowClick(e: MouseEvent) {
+      if (WrapperNode.contains(e.target as Node)) return;
+      props.onOutClick();
+    }
+
+    // timer just to fix unexpected React18 clicks behaviour
+    // https://stackoverflow.com/questions/72315874/react-click-outside-event-happens-right-after-click-to-open-preventing-the-mod/72316017#72316017
+    const timerID = setTimeout(() => {
+      window.addEventListener('click', onWindowClick);
+    }, 0);
+
+    return () => {
+      clearTimeout(timerID);
+      window.removeEventListener('click', onWindowClick);
+    };
+  }, []);
 
   return (
     <S.ScrollWrapper ref={wrapperRef}>
@@ -183,13 +179,13 @@ function FiltersList(props: FilterOptionsList) {
         target.scrollTop / (target.scrollHeight - target.clientHeight),
       );
     });
-  });
+  }, []);
 
   return (
-    <S.DropdownList ref={listRef}>
+    <S.FilterDropdownList ref={listRef}>
       {Array.from(props.options).map((option) => {
         return (
-          <S.DropdownItem
+          <S.FilterDropdownItem
             $isChecked={props.checkedOptions?.has(option)}
             onClick={() => {
               props.onDropDownClick(props.filterName, option);
@@ -197,31 +193,62 @@ function FiltersList(props: FilterOptionsList) {
             key={option}
           >
             {option}
-          </S.DropdownItem>
+          </S.FilterDropdownItem>
         );
       })}
-    </S.DropdownList>
+    </S.FilterDropdownList>
   );
 }
 
 function SortButton(props: SortButtonProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  function toggleBtnExpansion() {
+    setIsExpanded(!isExpanded);
+  }
+
   return (
     <S.PLModBarWrapper>
       <S.PLModButton
         type={'button'}
-        $isOpened={props.isOpened}
-        onClick={props.onBtnClick}
+        $isOpened={isExpanded}
+        onClick={toggleBtnExpansion}
       >
         {props.ruText}
       </S.PLModButton>
-      {props.isOpened && <SortButtonDropdown {...props} />}
+      {props.checkedOption && <BTNCounter count={1} />}
+      {isExpanded && (
+        <SortButtonDropdown {...props} onOutClick={toggleBtnExpansion} />
+      )}
     </S.PLModBarWrapper>
   );
 }
 
-function SortButtonDropdown(props: SortButtonProps) {
+function SortButtonDropdown(props: SortBtnDropdownProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const WrapperNode = wrapperRef.current as HTMLDivElement;
+
+    function onWindowClick(e: MouseEvent) {
+      if (WrapperNode.contains(e.target as Node)) return;
+      props.onOutClick();
+    }
+
+    // timer just to fix unexpected React18 clicks behaviour
+    // https://stackoverflow.com/questions/72315874/react-click-outside-event-happens-right-after-click-to-open-preventing-the-mod/72316017#72316017
+    const timerID = setTimeout(() => {
+      window.addEventListener('click', onWindowClick);
+    }, 0);
+
+    return () => {
+      clearTimeout(timerID);
+      window.removeEventListener('click', onWindowClick);
+    };
+  }, []);
+
   return (
-    <S.ScrollWrapper>
+    <S.ScrollWrapper ref={wrapperRef}>
       <SortOptionsList {...props} />
     </S.ScrollWrapper>
   );
@@ -232,19 +259,35 @@ function SortOptionsList(props: SortBtnDropdownProps) {
     <S.DropdownList>
       {Object.keys(props.options).map((option) => {
         return (
-          <S.DropdownItem
-            $isChecked={props.checkedOption === option}
+          <S.SortDropdownItem
             onClick={() => {
               props.onDropDownClick(props.sortName, option as SortOptions);
             }}
             key={option}
           >
-            {props.options[option as keyof typeof props.options]}
-          </S.DropdownItem>
+            {props.checkedOption === option ? (
+              <S.RadioSVG
+                aria-label="radio button is ON"
+                href="img/icon/sprite.svg#icon-radio-on"
+              />
+            ) : (
+              <S.RadioSVG
+                aria-label="radio button is OFF"
+                href="img/icon/sprite.svg#icon-radio-off"
+              />
+            )}
+            <S.SortOptionText>
+              {props.options[option as keyof typeof props.options]}
+            </S.SortOptionText>
+          </S.SortDropdownItem>
         );
       })}
     </S.DropdownList>
   );
+}
+
+function BTNCounter({ count }: { count: number }) {
+  return <S.PLModButtonCounter>{count}</S.PLModButtonCounter>;
 }
 
 function Content(props: PLProps) {

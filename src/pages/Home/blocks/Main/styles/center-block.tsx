@@ -32,6 +32,13 @@ export const IsLikedSVG = styled(SvgImg)`
   fill: transparent;
   stroke: #696969;
 `;
+
+export const RadioSVG = styled(SvgImg)`
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  flex-shrink: 0;
+`;
 // .
 
 export const CenterBlock = styled.div`
@@ -198,7 +205,8 @@ export const PLModButtonCounter = styled.div`
 // `;
 
 export const ScrollWrapper = styled.div`
-  width: 248px;
+  min-width: 248px;
+  max-width: 348px;
   max-height: 305px;
   margin-top: 10px;
   padding: 34px;
@@ -220,13 +228,16 @@ export const DropdownList = styled.ul`
   }
 
   box-sizing: border-box;
-  padding-right: 12px;
   overflow-y: scroll;
   overflow-x: hidden;
+`;
+
+export const FilterDropdownList = styled(DropdownList)`
+  padding-right: 12px;
   flex-grow: 1;
 `;
 
-export const DropdownItem = styled.li<{ $isChecked?: boolean }>`
+export const FilterDropdownItem = styled.li<{ $isChecked?: boolean }>`
   display: block;
   font-size: 20px;
   line-height: 25px;
@@ -261,6 +272,38 @@ export const DropdownItem = styled.li<{ $isChecked?: boolean }>`
           }
         `;
   }}
+`;
+
+export const SortDropdownItem = styled.li`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  font-size: 20px;
+  line-height: 25px;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+
+  &:not(:last-child) {
+    margin-bottom: 28px;
+  }
+
+  &:hover {
+    color: #d9b6ff;
+    cursor: pointer;
+  }
+
+  &:active {
+    color: #ad61ff;
+    cursor: pointer;
+  }
+`;
+
+export const SortOptionText = styled.div`
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const Content = styled.div`

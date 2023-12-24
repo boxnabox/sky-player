@@ -61,7 +61,7 @@ interface PLModifierProps {
     [key: FilterKey]: Set<string>;
   };
   filterState?: FilterOptions;
-  checkedSorting?: SortState;
+  sortState?: SortState;
   onFilterChange: (filterName: FilterKey, filterOption: string) => void;
   onSortChange: (sortName: SortKey, filterOption: SortOptions) => void;
 }
@@ -79,8 +79,6 @@ interface CommonFilterProps {
 
 interface FilterButtonProps extends CommonFilterProps {
   ruText: string;
-  isOpened: boolean;
-  onBtnClick: () => void;
 }
 
 interface FilterDropdownProps extends CommonFilterProps {
@@ -92,20 +90,21 @@ interface FilterOptionsList extends CommonFilterProps {
   lengthHandler: (isLong: boolean) => void;
 }
 
-interface SortButtonProps extends SortBtnDropdownProps {
-  ruText: string;
-  isOpened: boolean;
-  onBtnClick: () => void;
-}
-
-interface SortBtnDropdownProps {
+interface CommonSortProps {
   sortName: SortKey;
   options: {
-    descending: string;
-    ascending: string;
+    [key: SortOptions]: string;
   };
   checkedOption?: SortOptions;
   onDropDownClick: (sortName: SortKey, sortOption: SortOptions) => void;
+}
+
+interface SortButtonProps extends CommonSortProps {
+  ruText: string;
+}
+
+interface SortBtnDropdownProps extends CommonSortProps {
+  onOutClick: (sortName?: SortKey) => void;
 }
 
 interface PLProps {

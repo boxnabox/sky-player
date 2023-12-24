@@ -125,7 +125,7 @@ export default function App() {
       modifierElems: PLUG.PL_MODIFIER_BAR_ELEMENTS,
       filterOptions: filterOptions,
       filterState: filterState,
-      checkedSorting: sortState,
+      sortState: sortState,
       onFilterChange: handleFilterChange,
       onSortChange: handleSortChange,
     };

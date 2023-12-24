@@ -54,7 +54,11 @@ function ScrollBar(props: SBProps) {
   //   }
 
   //   sliderNode.addEventListener('mousedown', sliderMDHandler);
-  // });
+
+  //   return () => {
+  //     sliderNode.removeEventListener('mousedown', sliderMDHandler);
+  //   };
+  // }, []);
 
   return (
     <S.Wrapper>
