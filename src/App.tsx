@@ -5,8 +5,8 @@ import * as S from './styles';
 import tracks from './data/tracks';
 import * as PLUG from './data/plugs';
 import isFilter from './utils/isFilter';
-import HomePage from './pages/Home';
-import Login from './pages/Login';
+import HomePage from './pages/home';
+import Login from './pages/login';
 
 export default function App() {
   const [logedIn, setLogedIn] = useState(true);
