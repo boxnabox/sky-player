@@ -1,11 +1,13 @@
 import styled from 'styled-components';
 
 export const Bar = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
   background: rgba(28, 28, 28, 0.5);
+
+  position: fixed;
+  bottom: 0;
 `;
 
 export const BarContent = styled.div`
