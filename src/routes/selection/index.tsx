@@ -1,9 +1,9 @@
 import * as S from './index.style';
 
-export default function Signup() {
+export default function Selection() {
   return (
     <S.Container>
-      <div className="login">SIGNUP</div>
+      <div className="login">SELECTION</div>
     </S.Container>
   );
 }

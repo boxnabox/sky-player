@@ -29,23 +29,23 @@ export const PL_MODIFIER_BAR_ELEMENTS: PLModifierElems = [
   'release_date',
 ];
 
-export const SELECTIONS = [
-  {
-    name: 'today plst',
-    href: 'https://',
-    imgSrc: 'img/playlist01.png',
-    imgAlt: "day's playlist",
-  },
-  {
-    name: '100 hits',
-    href: 'https://',
-    imgSrc: 'img/playlist02.png',
-    imgAlt: "day's playlist",
-  },
-  {
-    name: 'indie',
-    href: 'https://',
-    imgSrc: 'img/playlist03.png',
-    imgAlt: 'indie boost',
-  },
-];
+// export const SELECTIONS = [
+//   {
+//     name: 'today plst',
+//     href: 'https://',
+//     imgSrc: 'img/playlist01.png',
+//     imgAlt: "day's playlist",
+//   },
+//   {
+//     name: '100 hits',
+//     href: 'https://',
+//     imgSrc: 'img/playlist02.png',
+//     imgAlt: "day's playlist",
+//   },
+//   {
+//     name: 'indie',
+//     href: 'https://',
+//     imgSrc: 'img/playlist03.png',
+//     imgAlt: 'indie boost',
+//   },
+// ];

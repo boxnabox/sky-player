@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import * as S from './styles';
+import * as S from './style';
 
 export default ScrollBar;
 

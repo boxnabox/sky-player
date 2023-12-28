@@ -12,6 +12,14 @@ type SortState = {
   option: SortOptions;
 };
 
+interface User {
+  id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
 interface Track {
   id: number;
   name: string;
@@ -22,14 +30,15 @@ interface Track {
   album: string;
   logo: null | string;
   track_file: string;
-  stared_user: user[];
+  stared_user: User[];
 }
 
 interface TracksSelection {
+  id: number;
   name: string;
-  href: string;
-  imgSrc: string;
-  imgAlt: string;
+  imgSrc?: string;
+  owner: User;
+  items: Track[];
 }
 
 interface NavItem {
