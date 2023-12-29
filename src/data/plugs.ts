@@ -17,12 +17,6 @@ export const ALL_SORT_OPTIONS = [
   'duration_in_seconds',
 ] as const;
 
-export const MENU_ITEMS = [
-  { link: '#', text: 'Главное' },
-  { link: '#', text: 'Мои треки' },
-  { link: '#', text: 'Войти' },
-];
-
 export const PL_MODIFIER_BAR_ELEMENTS: PLModifierElems = [
   'author',
   'genre',

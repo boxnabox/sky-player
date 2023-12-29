@@ -1,6 +1,6 @@
 import * as S from './style';
 
-export default function PlayerBlock(props: PlayerBarProps) {
+export default function PlayerBlock(props: PlayerBlockProps) {
   return (
     <S.PlayerBlock>
       <Player {...props} />
@@ -9,8 +9,8 @@ export default function PlayerBlock(props: PlayerBarProps) {
   );
 }
 
-function Player(props: PlayerBarProps) {
-  if (!props.currentTrack) {
+function Player(props: PlayerBlockProps) {
+  if (!props.track) {
     return (
       <S.Player>
         <PlayerControls />
@@ -21,7 +21,7 @@ function Player(props: PlayerBarProps) {
   return (
     <S.Player>
       <PlayerControls />
-      <TrackOnPlay track={props.currentTrack} />
+      <TrackOnPlay track={props.track} />
     </S.Player>
   );
 }
@@ -33,49 +33,49 @@ function PlayerControls() {
         <S.BtnSVG
           $size="medium"
           ariaLabel="prev"
-          href="img/icon/sprite.svg#icon-prev"
+          href="/img/icon/sprite.svg#icon-prev"
         />
       </S.ControlBtn>
       <S.ControlBtn>
         <S.BtnSVG
           $size="large"
           ariaLabel="play"
-          href="img/icon/sprite.svg#icon-play"
+          href="/img/icon/sprite.svg#icon-play"
         />
       </S.ControlBtn>
       <S.ControlBtn $isLast={true}>
         <S.BtnSVG
           $size="medium"
           ariaLabel="next"
-          href="img/icon/sprite.svg#icon-next"
+          href="/img/icon/sprite.svg#icon-next"
         />
       </S.ControlBtn>
       <S.PlayOrderBtn>
         <S.BtnSVG
           $size="small"
           ariaLabel="repeat"
-          href="img/icon/sprite.svg#icon-repeat"
+          href="/img/icon/sprite.svg#icon-repeat"
         />
       </S.PlayOrderBtn>
       <S.PlayOrderBtn $isLast={true}>
         <S.BtnSVG
           $size="small"
           ariaLabel="shuffle"
-          href="img/icon/sprite.svg#icon-shuffle"
+          href="/img/icon/sprite.svg#icon-shuffle"
         />
       </S.PlayOrderBtn>
     </S.PLRControls>
   );
 }
 
-function TrackOnPlay(props: TrackOnPlayProps) {
+function TrackOnPlay(props: TracOnPlayProps) {
   return (
     <S.TrackOnPlay>
       <S.TOPContainer>
         <S.TOPAlbum>
           <S.AlbumSVG
             ariaLabel="music"
-            href={props.track.logo || 'img/icon/sprite.svg#icon-note'}
+            href={props.track.logo || '/img/icon/sprite.svg#icon-note'}
           />
         </S.TOPAlbum>
         <S.TOPName>
@@ -125,7 +125,7 @@ function LikeBtn(props: ReactionBtnProps) {
       <S.ReactSVG
         $option="like"
         ariaLabel="like"
-        href={'img/icon/sprite.svg#icon-like'}
+        href={'/img/icon/sprite.svg#icon-like'}
       />
     </S.ReactBtn>
   );
@@ -137,7 +137,7 @@ function DisLikeBtn(props: ReactionBtnProps) {
       <S.ReactSVG
         $option="dis"
         ariaLabel="dislike"
-        href={'img/icon/sprite.svg#icon-dislike'}
+        href={'/img/icon/sprite.svg#icon-dislike'}
       />
     </S.ReactBtn>
   );
@@ -150,15 +150,11 @@ function Volume() {
         <S.VCIcon>
           <S.VolumeSVG
             aria-label="volume"
-            href="img/icon/sprite.svg#icon-volume"
+            href="/img/icon/sprite.svg#icon-volume"
           />
         </S.VCIcon>
         <S.VolumeInputWrapper>
-          <S.VolumeInput
-          // className={clsx('volume__progress-line', '_btn')}
-          // type="range"
-          // name="range"
-          />
+          <S.VolumeInput />
         </S.VolumeInputWrapper>
       </S.VCContainer>
     </S.VolumeComtrol>

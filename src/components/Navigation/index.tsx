@@ -1,19 +1,23 @@
-import { useState } from 'react';
-
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import * as S from './style';
 
 export default function Navigation(props: NavProps) {
-  const [isExpanded, setMenuVisibility] = useState(props.isExpanded);
+  const navItems: NavItem[] = [
+    { link: '/', text: 'Главное' },
+    { link: '/favorites', text: 'Мои треки' },
+    { link: '#', text: 'Войти' },
+  ];
 
-  const toggleMenuVisibility = () => {
-    setMenuVisibility(!isExpanded);
-  };
+  useEffect(() => {
+    console.log('render: nav');
+  }, []);
 
   return (
     <S.Nav>
       <Logo />
-      <Burger onClick={toggleMenuVisibility} />
-      {isExpanded && <Menu {...props} />}
+      <Burger onClick={props.onBurgerClick} />
+      {props.isNavOpen && <Menu items={navItems} />}
     </S.Nav>
   );
 }
@@ -21,7 +25,9 @@ export default function Navigation(props: NavProps) {
 function Logo() {
   return (
     <S.Logo>
-      <S.LogoImage src="./img/logo.png" aria-label="skypro logo" />
+      <Link to={'/'}>
+        <S.LogoImage src="/img/logo.png" aria-label="skypro logo" />
+      </Link>
     </S.Logo>
   );
 }
@@ -36,11 +42,11 @@ function Burger(props: BurgerProps) {
   );
 }
 
-function Menu({ navItems }: NavProps) {
+function Menu(props: MenuProps) {
   return (
     <S.Menu>
       <S.MenuList>
-        {navItems.map((item) => (
+        {props.items.map((item) => (
           <MenuItem link={item.link} text={item.text} key={item.text} />
         ))}
       </S.MenuList>
@@ -51,7 +57,7 @@ function Menu({ navItems }: NavProps) {
 function MenuItem(props: NavItem) {
   return (
     <S.MenuItem>
-      <S.MenuLink href={props.link}>{props.text}</S.MenuLink>
+      <S.MenuLink to={props.link}>{props.text}</S.MenuLink>
     </S.MenuItem>
   );
 }

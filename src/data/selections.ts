@@ -2,7 +2,7 @@ export const selections: TracksSelection[] = [
   {
     id: 1,
     name: 'Плейлист дня',
-    imgSrc: 'img/playlist01.png',
+    imgSrc: '/img/playlist01.png',
     owner: {
       id: 14,
       username: 'user',
@@ -1969,7 +1969,7 @@ export const selections: TracksSelection[] = [
   {
     id: 2,
     name: '100 танцевальных хитов',
-    imgSrc: 'img/playlist02.png',
+    imgSrc: '/img/playlist02.png',
     owner: {
       id: 97,
       username: 'zarinann',
@@ -3095,8 +3095,8 @@ export const selections: TracksSelection[] = [
   },
   {
     id: 3,
-    name: '100 танцевальных хитов',
-    imgSrc: 'img/playlist03.png',
+    name: 'Инди заряд',
+    imgSrc: '/img/playlist03.png',
     owner: {
       id: 449,
       username: '31@ramankaiko.com',

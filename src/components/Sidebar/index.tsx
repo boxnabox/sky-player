@@ -41,8 +41,8 @@ function SidebarList(props: SidebarProps) {
 function SidebarItem(props: TracksSelection) {
   return (
     <S.SBItem>
-      <S.SBItemLink href={'#'}>
-        <S.SBItemImg src={props.imgSrc} aria-label={props.name} />
+      <S.SBItemLink to={`/selection/${props.id}`}>
+        <S.SBItemImg src={`${props.imgSrc}`} aria-label={props.name} />
       </S.SBItemLink>
     </S.SBItem>
   );

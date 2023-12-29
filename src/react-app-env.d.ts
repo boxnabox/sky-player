@@ -41,27 +41,26 @@ interface TracksSelection {
   items: Track[];
 }
 
+interface BurgerProps {
+  onClick: () => void;
+}
+
+interface MainProps extends NavProps {
+  tracksSelection?: TracksSelection[];
+}
+
+interface NavProps {
+  isNavOpen?: boolean;
+  onBurgerClick: () => void;
+}
+
 interface NavItem {
   link: string;
   text: string;
 }
 
-interface NavProps {
-  navItems: NavItem[];
-  isExpanded: boolean;
-}
-
-interface BurgerProps {
-  onClick: () => void;
-}
-interface HomePageProps extends MainProps {
-  currentTrack?: Track;
-}
-
-interface MainProps {
-  sortedTracks?: Track[];
-  plModifierProps: PLModifierProps;
-  tracksSelection?: TracksSelection[];
+interface MenuProps {
+  items: NavItem[];
 }
 
 interface PLModifierProps {
@@ -126,13 +125,19 @@ interface SVGProps {
   href: string;
 }
 
-interface PlayerBarProps {
-  currentTrack?: Track;
+interface PlayerProps {
+  tracks?: Track[];
   onLikeClick?: () => void;
   onDisClick?: () => void;
 }
 
-interface TrackOnPlayProps {
+interface PlayerBlockProps {
+  track?: Track;
+  onLikeClick?: () => void;
+  onDisClick?: () => void;
+}
+
+interface TracOnPlayProps {
   track: Track;
   onLikeClick?: () => void;
   onDisClick?: () => void;

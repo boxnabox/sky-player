@@ -17,7 +17,7 @@ function PlaylistTitle() {
       <S.PLCol $col={2}>ИСПОЛНИТЕЛЬ</S.PLCol>
       <S.PLCol $col={3}>АЛЬБОМ</S.PLCol>
       <S.PLCol $col={4}>
-        <S.ClockSVG aria-label="time" href="img/icon/sprite.svg#icon-watch" />
+        <S.ClockSVG aria-label="time" href="/img/icon/sprite.svg#icon-watch" />
       </S.PLCol>
     </S.PLTitle>
   );
@@ -63,7 +63,7 @@ function Track(props: Track) {
         <S.TrTitleImg>
           <S.AlbumSVG
             aria-label="music"
-            href={props.logo || 'img/icon/sprite.svg#icon-note'}
+            href={props.logo || '/img/icon/sprite.svg#icon-note'}
           />
         </S.TrTitleImg>
         <S.TrName>
@@ -80,7 +80,10 @@ function Track(props: Track) {
         <S.TrAlbumLink href="http://">{props.album}</S.TrAlbumLink>
       </S.TrAlbum>
       <S.TrDurationWrapper>
-        <S.IsLikedSVG ariaLabel="like" href={'img/icon/sprite.svg#icon-like'} />
+        <S.IsLikedSVG
+          ariaLabel="like"
+          href={'/img/icon/sprite.svg#icon-like'}
+        />
         <S.TrDuration>{formatTime(props.duration_in_seconds)}</S.TrDuration>
       </S.TrDurationWrapper>
     </S.Track>

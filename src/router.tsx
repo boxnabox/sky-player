@@ -1,24 +1,32 @@
-import { createBrowserRouter } from 'react-router-dom';
-import Selection from './routes/selection';
-import Favorites, { loader as favoritesLoader } from './routes/favorites';
+import { createBrowserRouter, LoaderFunction } from 'react-router-dom';
+import AllTracksRoute, { loader as allTracksLoader } from './routes/all-tracks';
+import SelectionRoute, { loader as selectionLoader } from './routes/selection';
+import FavoritesRoute, { loader as favoritesLoader } from './routes/favorites';
 import Login from './pages/login';
 import Signup from './pages/signup';
-import AllTracks from './routes/all-tracks';
-import MainPage from './pages/main';
+
+import MainPage, { loader as mainPageLoader } from './pages/main';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <MainPage />,
+    loader: mainPageLoader,
     children: [
-      { index: true, loader: favoritesLoader, element: <Favorites /> },
       {
-        path: 'favorites',
-        element: <Favorites />,
+        path: '/',
+        element: <AllTracksRoute />,
+        loader: allTracksLoader,
       },
       {
-        path: 'selections/:selectionId',
-        element: <Selection />,
+        path: 'favorites',
+        element: <FavoritesRoute />,
+        loader: favoritesLoader,
+      },
+      {
+        path: 'selection/:selectionId',
+        element: <SelectionRoute />,
+        loader: selectionLoader as unknown as LoaderFunction<unknown>,
       },
     ],
   },

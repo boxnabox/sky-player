@@ -17,6 +17,12 @@ export const Global = createGlobalStyle`
     height: 100%;
     font-family: 'Stratos-Regular', sans-serif;
     color: #ffffff;
+
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   * {

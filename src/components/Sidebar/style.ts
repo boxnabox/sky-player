@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
 // also SB, as Sidebar
@@ -22,6 +23,7 @@ export const SBUserName = styled.p`
   color: #ffffff;
   margin-right: 16px;
 `;
+
 export const SBUserAvatar = styled.div`
   width: 43px;
   height: 43px;
@@ -61,7 +63,7 @@ export const SBItem = styled.div<{ $isPlug?: boolean }>`
   }}
 `;
 
-export const SBItemLink = styled.a`
+export const SBItemLink = styled(Link)`
   width: 100%;
   height: 100%;
 `;
