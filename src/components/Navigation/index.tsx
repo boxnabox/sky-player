@@ -4,7 +4,7 @@ import * as S from './style';
 
 export default function Navigation(props: NavProps) {
   const navItems: NavItem[] = [
-    { link: '/', text: 'Главное' },
+    { link: '/', text: 'Главная' },
     { link: '/favorites', text: 'Мои треки' },
     { link: '#', text: 'Войти' },
   ];
