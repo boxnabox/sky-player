@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import SkyLogo from '../SkyLogo';
 import * as S from './style';
 
 export default function Navigation(props: NavProps) {
@@ -26,7 +27,7 @@ function Logo() {
   return (
     <S.Logo>
       <Link to={'/'}>
-        <S.LogoImage src="/img/logo.png" aria-label="skypro logo" />
+        <SkyLogo w="114px" h="auto" color="white" />
       </Link>
     </S.Logo>
   );

@@ -1,9 +1,10 @@
-import * as S from './index.style';
+import SignUpForm from '../../components/SignUpForm';
+import * as S from './style';
 
-export default function Signup() {
+export default function SignUpPage() {
   return (
     <S.Container>
-      <div className="login">SIGNUP</div>
+      <SignUpForm />
     </S.Container>
   );
 }

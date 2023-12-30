@@ -71,3 +71,9 @@ export const AppWrapper = styled.div`
   overflow: hidden;
   background-color: #383838;
 `;
+
+export const AuthBtn = styled.button`
+  position: absolute;
+  top: 0px;
+  right: 0px;
+`;
