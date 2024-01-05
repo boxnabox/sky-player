@@ -5,8 +5,17 @@ import { getAllTracks } from '../utils/server-like';
 import { TracksBypassContext } from '../pages/main';
 
 export function loader() {
+  const tracks = getAllTracks();
   console.log('all tracks loader');
-  return getAllTracks();
+
+  if (!tracks) {
+    throw new Response('', {
+      status: 404,
+      statusText: 'Not Found',
+    });
+  }
+
+  return tracks;
 }
 
 export default function AllTracksRoute() {

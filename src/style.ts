@@ -70,10 +70,5 @@ export const AppWrapper = styled.div`
   min-height: 100%;
   overflow: hidden;
   background-color: #383838;
-`;
-
-export const AuthBtn = styled.button`
-  position: absolute;
-  top: 0px;
-  right: 0px;
+  position: relative;
 `;

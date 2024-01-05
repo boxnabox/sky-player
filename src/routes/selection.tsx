@@ -5,8 +5,16 @@ import { TracksBypassContext } from '../pages/main';
 import { getSelection } from '../utils/server-like';
 
 export const loader: LoaderFunction = ({ params }) => {
+  const selection = getSelection(Number(params.selectionId));
+
   console.log(`selection #${params.selectionId} loader`);
-  return getSelection(Number(params.selectionId));
+  if (!selection) {
+    throw new Response('', {
+      status: 404,
+      statusText: 'Not Found',
+    });
+  }
+  return selection;
 };
 
 export default function SelectionRoute() {
