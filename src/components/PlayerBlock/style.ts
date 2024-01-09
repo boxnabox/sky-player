@@ -1,21 +1,22 @@
 import styled, { css } from 'styled-components';
 import SvgImg from '../SvgImg';
 
-export const PlayerBlock = styled.div`
+export const PlayerInterface = styled.div`
   height: 73px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 `;
 
-// also PLR, as Player
-export const Player = styled.div`
+export const ControlsWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
 `;
 
+
+// PLR as Player
 export const PLRControls = styled.div`
   display: flex;
   flex-direction: row;

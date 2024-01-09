@@ -1,28 +1,28 @@
 import * as S from './style';
 
-export default function PlayerBlock(props: PlayerBlockProps) {
+export default function PlayerInterface(props: PlayerBlockProps) {
   return (
-    <S.PlayerBlock>
-      <Player {...props} />
+    <S.PlayerInterface>
+      <ControlsWrapper {...props} />
       <Volume />
-    </S.PlayerBlock>
+    </S.PlayerInterface>
   );
 }
 
-function Player(props: PlayerBlockProps) {
+function ControlsWrapper(props: PlayerBlockProps) {
   if (!props.track) {
     return (
-      <S.Player>
+      <S.ControlsWrapper>
         <PlayerControls />
-        <TrackOnPlayPlug />
-      </S.Player>
+        <TrackInfoPlug />
+      </S.ControlsWrapper>
     );
   }
   return (
-    <S.Player>
+    <S.ControlsWrapper>
       <PlayerControls />
-      <TrackOnPlay track={props.track} />
-    </S.Player>
+      <TrackInfo track={props.track} />
+    </S.ControlsWrapper>
   );
 }
 
@@ -68,7 +68,7 @@ function PlayerControls() {
   );
 }
 
-function TrackOnPlay(props: TracOnPlayProps) {
+function TrackInfo(props: TracOnPlayProps) {
   return (
     <S.TrackOnPlay>
       <S.TOPContainer>
@@ -102,7 +102,7 @@ function TrackOnPlay(props: TracOnPlayProps) {
   );
 }
 
-function TrackOnPlayPlug() {
+function TrackInfoPlug() {
   return (
     <S.TrackOnPlay>
       <S.TOPContainer>
