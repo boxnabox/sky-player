@@ -1,7 +1,7 @@
 import * as S from './style';
 
 import ProgressBar from '../ProgressBar';
-import PlayerInterface from '../PlayerBlock';
+import PlayerInterface from '../PlayerInterface';
 
 export default function Player(props: PlayerProps) {
   return (
@@ -9,6 +9,7 @@ export default function Player(props: PlayerProps) {
       <S.PlayerContent>
         <ProgressBar />
         <PlayerInterface track={props.tracks?.[0]} />
+        <audio controls src="/temp/Bobby_Marleni_-_Dropin.mp3"></audio>
       </S.PlayerContent>
     </S.Wrapper>
   );
