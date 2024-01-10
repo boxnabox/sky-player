@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
   background: rgba(28, 28, 28, 0.9);
 
   position: fixed;
-  bottom: 0;
+  bottom: 0px;
 `;
 
 export const PlayerContent = styled.div`
