@@ -9,7 +9,7 @@ export default function Player(props: PlayerProps) {
       <S.PlayerContent>
         <ProgressBar />
         <PlayerInterface track={props.tracks?.[0]} />
-        <audio controls src="/temp/Bobby_Marleni_-_Dropin.mp3"></audio>
+        <audio className='audio' controls src="/temp/Bobby_Marleni_-_Dropin.mp3"></audio>
       </S.PlayerContent>
     </S.Wrapper>
   );
