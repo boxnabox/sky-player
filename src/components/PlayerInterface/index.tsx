@@ -13,59 +13,101 @@ function ControlsWrapper(props: PlayerBlockProps) {
   if (!props.track) {
     return (
       <S.ControlsWrapper>
-        <PlayerControls />
+        <PlayerControls {...props}/>
         <TrackInfoPlug />
       </S.ControlsWrapper>
     );
   }
   return (
     <S.ControlsWrapper>
-      <PlayerControls />
+      <PlayerControls {...props}/>
       <TrackInfo track={props.track} />
     </S.ControlsWrapper>
   );
 }
 
-function PlayerControls() {
+function PlayerControls(props: PlayerBlockProps) {
   return (
     <S.PLRControls>
-      <S.ControlBtn>
-        <S.BtnSVG
-          $size="medium"
-          ariaLabel="prev"
-          href="/img/icon/sprite.svg#icon-prev"
-        />
-      </S.ControlBtn>
-      <S.ControlBtn>
-        <S.BtnSVG
-          $size="large"
-          ariaLabel="play"
-          href="/img/icon/sprite.svg#icon-play"
-        />
-      </S.ControlBtn>
-      <S.ControlBtn $isLast={true}>
-        <S.BtnSVG
-          $size="medium"
-          ariaLabel="next"
-          href="/img/icon/sprite.svg#icon-next"
-        />
-      </S.ControlBtn>
-      <S.PlayOrderBtn>
-        <S.BtnSVG
-          $size="small"
-          ariaLabel="repeat"
-          href="/img/icon/sprite.svg#icon-repeat"
-        />
-      </S.PlayOrderBtn>
-      <S.PlayOrderBtn $isLast={true}>
-        <S.BtnSVG
-          $size="small"
-          ariaLabel="shuffle"
-          href="/img/icon/sprite.svg#icon-shuffle"
-        />
-      </S.PlayOrderBtn>
+      <PrevBtn onClick={props.onPrevClick}/>
+      <PlayBtn onClick={props.onPlayClick}/>
+      <NextBtn onClick={props.onNextClick}/>
+      <RepeatBtn onClick={()=> {console.log("repeat btn click");}}/>
+      <ShuffleBtn onClick={()=> {console.log("shuffle btn click");}}/>
     </S.PLRControls>
   );
+}
+
+function PrevBtn(props: AudioControlsProps) {
+  return (
+    <S.ControlBtn onClick={props.onClick}>
+      <S.BtnSVG
+        $size="medium"
+        ariaLabel="prev"
+        href="/img/icon/sprite.svg#icon-prev"
+      />
+    </S.ControlBtn>
+  )
+}
+
+function PlayBtn(props: AudioControlsProps) {
+  return (
+    <S.ControlBtn onClick={props.onClick}>
+      <S.BtnSVG
+        $size="large"
+        ariaLabel="play"
+        href="/img/icon/sprite.svg#icon-play"
+      />
+    </S.ControlBtn>
+  )
+}
+
+function PauseBtn(props: AudioControlsProps) {
+  return (
+    <S.ControlBtn onClick={props.onClick}>
+      <S.BtnSVG
+        $size="large"
+        ariaLabel="pause"
+        href="/img/icon/sprite.svg#icon-pause"
+      />
+    </S.ControlBtn>
+  )
+}
+
+function NextBtn(props: AudioControlsProps) {
+  return (
+    <S.ControlBtn $isLast={true} onClick={props.onClick}>
+      <S.BtnSVG
+        $size="medium"
+        ariaLabel="next"
+        href="/img/icon/sprite.svg#icon-next"
+      />
+    </S.ControlBtn>
+  )
+}
+
+function RepeatBtn(props: AudioControlsProps) {
+  return (
+    <S.PlayOrderBtn onClick={props.onClick}>
+      <S.BtnSVG
+        $size="small"
+        ariaLabel="repeat"
+        href="/img/icon/sprite.svg#icon-repeat"
+      />
+    </S.PlayOrderBtn>
+  )
+}
+
+function ShuffleBtn(props: AudioControlsProps) {
+  return (
+    <S.PlayOrderBtn $isLast={true} onClick={props.onClick}>
+      <S.BtnSVG
+        $size="small"
+        ariaLabel="shuffle"
+        href="/img/icon/sprite.svg#icon-shuffle"
+      />
+    </S.PlayOrderBtn>
+  )
 }
 
 function TrackInfo(props: TracOnPlayProps) {

@@ -133,8 +133,16 @@ interface PlayerProps {
 
 interface PlayerBlockProps {
   track?: Track;
+  onPlayClick: () => void;
+  onPauseClick: () => void;
+  onPrevClick: () => void;
+  onNextClick: () => void;
   onLikeClick?: () => void;
   onDisClick?: () => void;
+}
+
+interface AudioControlsProps {
+  onClick: () => void;
 }
 
 interface TracOnPlayProps {
