@@ -133,6 +133,7 @@ interface PlayerProps {
 
 interface PlayerBlockProps {
   track?: Track;
+  isPlaying?: boolean;
   onPlayClick: () => void;
   onPauseClick: () => void;
   onPrevClick: () => void;
@@ -145,6 +146,10 @@ interface AudioControlsProps {
   onClick: () => void;
 }
 
+interface AudioPlayerProps {
+  setStatus: (isPlaying: boolean) => void
+}
+
 interface TracOnPlayProps {
   track: Track;
   onLikeClick?: () => void;
@@ -154,4 +159,14 @@ interface TracOnPlayProps {
 interface ReactionBtnProps {
   parentBlockName?: string;
   onClick?: () => void;
+}
+
+interface SBProps {
+  progress?: number;
+  // onScroll: (newProgress: number) => void;
+  onSliderMove: (newProgress: number) => void;
+}
+
+interface ProgressBarProps {
+  progress?: number;
 }

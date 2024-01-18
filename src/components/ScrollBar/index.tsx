@@ -3,12 +3,6 @@ import * as S from './style';
 
 export default ScrollBar;
 
-interface SBProps {
-  progress?: number;
-  // onScroll: (newProgress: number) => void;
-  onSliderMove: (newProgress: number) => void;
-}
-
 function ScrollBar(props: SBProps) {
   const barRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);

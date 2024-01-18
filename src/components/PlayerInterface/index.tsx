@@ -1,6 +1,12 @@
+import { useEffect } from 'react';
 import * as S from './style';
 
 export default function PlayerInterface(props: PlayerBlockProps) {
+
+  useEffect(() => {
+    console.log("render: PlayerInterface");
+  })
+
   return (
     <S.PlayerInterface>
       <ControlsWrapper {...props} />
@@ -30,7 +36,7 @@ function PlayerControls(props: PlayerBlockProps) {
   return (
     <S.PLRControls>
       <PrevBtn onClick={props.onPrevClick}/>
-      <PlayBtn onClick={props.onPlayClick}/>
+      {props.isPlaying ? <PauseBtn onClick={props.onPauseClick}/> : <PlayBtn onClick={props.onPlayClick}/>}
       <NextBtn onClick={props.onNextClick}/>
       <RepeatBtn onClick={()=> {console.log("repeat btn click");}}/>
       <ShuffleBtn onClick={()=> {console.log("shuffle btn click");}}/>
