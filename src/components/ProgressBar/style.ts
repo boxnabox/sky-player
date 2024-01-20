@@ -9,7 +9,7 @@ export const ProgressBar = styled.div`
   background-color: #2e2e2e;
 `;
 
-export const ProgressLine = styled.div`
+export const ProgressLine = styled.div<{ $progress?: number; }>`
   width: 100%;
   height: 5px;
 
@@ -18,4 +18,5 @@ export const ProgressLine = styled.div`
   background-color: #580EA2;
 
   transform-origin: 0;
+  transform: scaleX(0);
 `;

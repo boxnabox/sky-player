@@ -3,10 +3,6 @@ import * as S from './style';
 
 export default function PlayerInterface(props: PlayerBlockProps) {
 
-  useEffect(() => {
-    console.log("render: PlayerInterface");
-  })
-
   return (
     <S.PlayerInterface>
       <ControlsWrapper {...props} />
