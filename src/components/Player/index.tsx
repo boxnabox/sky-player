@@ -40,10 +40,6 @@ export default function Player(props: PlayerProps) {
     AudioNode.ontimeupdate = () => {ProgressNode.style.transform = `scaleX(${AudioNode.currentTime / AudioNode.duration})`};
   }, [])
 
-  useEffect(() => {
-    console.log("render: Player");
-  })
-
   return (
     <S.Wrapper>
       <S.PlayerContent>

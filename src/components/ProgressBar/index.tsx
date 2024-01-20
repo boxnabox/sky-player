@@ -1,11 +1,7 @@
-import { forwardRef, useEffect } from 'react';
+import { forwardRef } from 'react';
 import * as S from './style';
 
 const ProgressBar = forwardRef(function ProgressBar(props: object, ref: React.ForwardedRef<HTMLDivElement>) {
-  useEffect(() => {
-    console.log("render: ProgressBar");
-  })
-
   return (
     <S.ProgressBar>
       <S.ProgressLine ref={ref}/>
