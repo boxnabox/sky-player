@@ -8,8 +8,8 @@ import * as S from './style';
 
 export default function Player(props: PlayerProps) {
   const [isPlaying, setIsPlaying] = useState<boolean>();
-  const [progress, setProgress] = useState<number>();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   function play () {
     if (!audioRef.current) {
@@ -29,6 +29,7 @@ export default function Player(props: PlayerProps) {
 
   useEffect(() => {
     const AudioNode = audioRef.current as HTMLAudioElement;
+    const ProgressNode = progressRef.current as HTMLDivElement;
     
     // 1. Setting track source (now it's plug, then would be props)
     AudioNode.src = '/temp/Terminalhead - Poison.mp3';
@@ -36,7 +37,7 @@ export default function Player(props: PlayerProps) {
     // 2. Setting <audio /> events handlers
     AudioNode.onpause = () => setIsPlaying(false);
     AudioNode.onplay = () => setIsPlaying(true);
-    AudioNode.ontimeupdate = () => {setProgress(AudioNode.currentTime / AudioNode.duration)};
+    AudioNode.ontimeupdate = () => {ProgressNode.style.transform = `scaleX(${AudioNode.currentTime / AudioNode.duration})`};
   }, [])
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export default function Player(props: PlayerProps) {
   return (
     <S.Wrapper>
       <S.PlayerContent>
-        <ProgressBar progress={progress}/>
+        <ProgressBar ref={progressRef}/>
         <PlayerInterface
           track={props.tracks?.[0]}
           isPlaying={isPlaying}

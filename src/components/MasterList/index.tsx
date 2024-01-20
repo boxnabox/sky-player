@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import PLModifierBar from '../MdifierBar';
+import PLModifierBar from '../ModifierBar';
 import Playlist from '../PlayList';
 
 import * as PLUG from '../../data/plugs';
