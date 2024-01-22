@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState, createContext } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import * as S from './style';
 
-import Main from './blocks/Main';
-import Bar from './blocks/Bar';
+import Player from '../../components/Player';
 import { getSelections } from '../../utils/server-like';
+import Navigation from '../../components/Navigation';
+import CenterBlock from '../../components/CenterBlock';
+import Sidebar from '../../components/Sidebar';
 
 export function loader() {
   console.log('Main page loader');
@@ -40,13 +42,16 @@ export default function MainPage() {
   return (
     <S.Container>
       <TracksBypassContext.Provider value={setTracksPool}>
-        <Main
-          tracksSelection={selections}
+      <S.Main>
+        <Navigation
           isNavOpen={isNavOpen}
           onBurgerClick={toggleNavVisibility}
         />
+        <CenterBlock />
+        <Sidebar tracksSelection={selections} />
+      </S.Main>
       </TracksBypassContext.Provider>
-      <Bar tracks={tracksPool} />
+      <Player tracks={tracksPool} />
     </S.Container>
   );
 }
