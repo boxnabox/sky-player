@@ -1,9 +1,10 @@
-import * as S from './styles';
+import LoginForm from '../../components/LoginForm';
+import * as S from './style';
 
-export default function Login() {
+export default function LoginPage() {
   return (
     <S.Container>
-      <div className="login">there would be login page</div>
+      <LoginForm />
     </S.Container>
   );
 }

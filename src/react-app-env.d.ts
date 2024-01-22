@@ -12,6 +12,14 @@ type SortState = {
   option: SortOptions;
 };
 
+interface User {
+  id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
 interface Track {
   id: number;
   name: string;
@@ -22,14 +30,28 @@ interface Track {
   album: string;
   logo: null | string;
   track_file: string;
-  stared_user: user[];
+  stared_user: User[];
 }
 
 interface TracksSelection {
+  id: number;
   name: string;
-  href: string;
-  imgSrc: string;
-  imgAlt: string;
+  imgSrc?: string;
+  owner: User;
+  items: Track[];
+}
+
+interface BurgerProps {
+  onClick: () => void;
+}
+
+interface MainProps extends NavProps {
+  tracksSelection?: TracksSelection[];
+}
+
+interface NavProps {
+  isNavOpen?: boolean;
+  onBurgerClick: () => void;
 }
 
 interface NavItem {
@@ -37,22 +59,8 @@ interface NavItem {
   text: string;
 }
 
-interface NavProps {
-  navItems: NavItem[];
-  isExpanded: boolean;
-}
-
-interface BurgerProps {
-  onClick: () => void;
-}
-interface HomePageProps extends MainProps {
-  currentTrack?: Track;
-}
-
-interface MainProps {
-  sortedTracks?: Track[];
-  plModifierProps: PLModifierProps;
-  tracksSelection?: TracksSelection[];
+interface MenuProps {
+  items: NavItem[];
 }
 
 interface PLModifierProps {
@@ -117,13 +125,32 @@ interface SVGProps {
   href: string;
 }
 
-interface PlayerBarProps {
-  currentTrack?: Track;
+interface PlayerProps {
+  tracks?: Track[];
   onLikeClick?: () => void;
   onDisClick?: () => void;
 }
 
-interface TrackOnPlayProps {
+interface PlayerBlockProps {
+  track?: Track;
+  isPlaying?: boolean;
+  onPlayClick: () => void;
+  onPauseClick: () => void;
+  onPrevClick: () => void;
+  onNextClick: () => void;
+  onLikeClick?: () => void;
+  onDisClick?: () => void;
+}
+
+interface AudioControlsProps {
+  onClick: () => void;
+}
+
+interface AudioPlayerProps {
+  setStatus: (isPlaying: boolean) => void
+}
+
+interface TracOnPlayProps {
   track: Track;
   onLikeClick?: () => void;
   onDisClick?: () => void;
@@ -132,4 +159,14 @@ interface TrackOnPlayProps {
 interface ReactionBtnProps {
   parentBlockName?: string;
   onClick?: () => void;
+}
+
+interface SBProps {
+  progress?: number;
+  // onScroll: (newProgress: number) => void;
+  onSliderMove: (newProgress: number) => void;
+}
+
+interface ProgressBarProps {
+  progress?: number;
 }
